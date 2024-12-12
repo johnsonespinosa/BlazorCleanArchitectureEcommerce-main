@@ -6,4 +6,25 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Categories\Commands\CreateCategory\" />
+    <Folder Include="Categories\Commands\DeleteCategory\" />
+    <Folder Include="Categories\Commands\UpdateCategory\" />
+    <Folder Include="Categories\Queries\GetCategories\" />
+    <Folder Include="Categories\Queries\GetCategoriesWithPagination\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application.Commons\Application.Commons.csproj" />
+    <ProjectReference Include="..\Application.Interfaces\Application.Interfaces.csproj" />
+    <ProjectReference Include="..\Application.Models\Application.Models.csproj" />
+    <ProjectReference Include="..\Domain\Domain.Models.csproj" />
+  </ItemGroup>
+
 </Project>
