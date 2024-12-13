@@ -17,7 +17,7 @@ namespace Application.Features.Products.Queries.GetProductsWithPagination
 
         public async Task<PaginatedResponse<ProductResponse>> Handle(GetProductsWithPaginationQuery request, CancellationToken cancellationToken)
         {
-            var entities = await _repository.GetAsync(request.Filter, cancellationToken);
+            var entities = await _repository.GetAsync(request.Pagination, cancellationToken);
             if (entities is null || entities.TotalCount < 0)
                 throw new NotFoundException();
 

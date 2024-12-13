@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Application.Features.Categories.Queries.GetCategoriesWithPagination
 {
-    public record GetCategoriesWithPaginationQuery(FilterRequest Filter) : IRequest<PaginatedResponse<CategoryResponse>>;
+    public record GetCategoriesWithPaginationQuery(PaginationRequest Pagination) : IRequest<PaginatedResponse<CategoryResponse>>;
 }

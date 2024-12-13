@@ -17,7 +17,7 @@ namespace Application.Features.Categories.Queries.GetCategoriesWithPagination
 
         public async Task<PaginatedResponse<CategoryResponse>> Handle(GetCategoriesWithPaginationQuery request, CancellationToken cancellationToken)
         {
-            var entities = await _repository.GetAsync(request.Filter, cancellationToken);
+            var entities = await _repository.GetAsync(request.Pagination, cancellationToken);
             if (entities is null || entities.TotalCount < 0)
                 throw new NotFoundException();
 
