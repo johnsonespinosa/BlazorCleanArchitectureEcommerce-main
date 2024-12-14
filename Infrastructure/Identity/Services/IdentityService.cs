@@ -1,19 +1,20 @@
 ﻿using Application.Interfaces;
 using Application.Models;
+using Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
-namespace Infrastructure.Identity
+namespace Infrastructure.Identity.Services
 {
     public class IdentityService : IIdentityService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
+        private readonly UserManager<User> _userManager;
+        private readonly IUserClaimsPrincipalFactory<User> _userClaimsPrincipalFactory;
         private readonly IAuthorizationService _authorizationService;
 
         public IdentityService(
-            UserManager<ApplicationUser> userManager,
-            IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
+            UserManager<User> userManager,
+            IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory,
             IAuthorizationService authorizationService)
         {
             _userManager = userManager;
@@ -29,7 +30,7 @@ namespace Infrastructure.Identity
 
         public async Task<(Response<string> Response, string UserId)> CreateUserAsync(string userName, string password)
         {
-            var user = new ApplicationUser
+            var user = new User
             {
                 UserName = userName,
                 Email = userName,
@@ -67,7 +68,7 @@ namespace Infrastructure.Identity
             return user != null ? await DeleteUserAsync(user) : new Response<string>();
         }
 
-        public async Task<Response<string>> DeleteUserAsync(ApplicationUser user)
+        public async Task<Response<string>> DeleteUserAsync(User user)
         {
             var result = await _userManager.DeleteAsync(user);
             return result.ToApplicationResult(); // Asegúrate de que ToApplicationResult devuelva Response
