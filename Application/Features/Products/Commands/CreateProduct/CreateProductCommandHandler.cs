@@ -1,12 +1,10 @@
 ﻿using Application.Interfaces;
 using Application.Models;
-using AutoMapper;
 using Domain.Entities;
-using MediatR;
 
 namespace Application.Features.Products.Commands.CreateProduct
 {
-    public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, WritingResponse>
+    public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Response<Guid>>
     {
         private readonly IRepositoryAsync<Product> _repository;
         private readonly IMapper _mapper;
@@ -17,11 +15,11 @@ namespace Application.Features.Products.Commands.CreateProduct
             _mapper = mapper;
         }
 
-        public async Task<WritingResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             var entity = _mapper.Map<Product>(request);
-            var response = await _repository.AddAsync(entity, cancellationToken);
-            return response;
+            var data = await _repository.AddAsync(entity, cancellationToken);
+            return new Response<Guid>(data);
         }
     }
 }

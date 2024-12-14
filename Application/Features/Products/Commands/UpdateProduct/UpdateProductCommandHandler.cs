@@ -5,7 +5,7 @@ using NotFoundException = Application.Commons.Exceptions.NotFoundException;
 
 namespace Application.Features.Products.Commands.UpdateProduct
 {
-    public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, WritingResponse>
+    public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Response<Guid>>
     {
         private readonly IRepositoryAsync<Product> _repository;
         private readonly IMapper _mapper;
@@ -15,7 +15,7 @@ namespace Application.Features.Products.Commands.UpdateProduct
             _mapper = mapper;
         }
 
-        public async Task<WritingResponse> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Guid>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
             var entity = await _repository.GetByIdAsync(request.Id, cancellationToken);
             if (entity is null)
@@ -23,8 +23,8 @@ namespace Application.Features.Products.Commands.UpdateProduct
 
             _mapper.Map(request, entity);
 
-            var response = await _repository.UpdateAsync(entity, cancellationToken);
-            return response;
+            var data = await _repository.UpdateAsync(entity, cancellationToken);
+            return new Response<Guid>(data);
         }
     }
 }

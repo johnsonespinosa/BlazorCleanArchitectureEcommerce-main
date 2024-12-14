@@ -1,14 +1,11 @@
 using Application;
 using Infrastructure;
 using Server;
+using Server.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
-
-services.AddControllers();
-services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
 
 services.AddApplicationServices();
 services.AddInfrastructureServices(configuration);
@@ -23,6 +20,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+app.UseExceptionHandler(options => { });
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
@@ -33,3 +34,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.Run();
+
+public partial class Program { }

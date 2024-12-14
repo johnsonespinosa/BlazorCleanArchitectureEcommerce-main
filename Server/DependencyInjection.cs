@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Infrastructure.Data.Contexts;
-using Presentation.Server.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.Server.Services;
 
 namespace Server
@@ -18,7 +19,12 @@ namespace Server
             services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
-            services.AddExceptionHandler<ExceptionHandler>();
+            services.Configure<ApiBehaviorOptions>(options =>
+            options.SuppressModelStateInvalidFilter = true);
+
+            services.AddControllers();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
             return services;
         }

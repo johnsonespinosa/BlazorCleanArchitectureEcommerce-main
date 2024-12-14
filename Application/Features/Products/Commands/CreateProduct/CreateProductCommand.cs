@@ -1,9 +1,9 @@
 ﻿using Application.Models;
-using MediatR;
+using Domain.Entities;
 
 namespace Application.Features.Products.Commands.CreateProduct
 {
-    public record CreateProductCommand : IRequest<WritingResponse>
+    public record CreateProductCommand : IRequest<Response<Guid>>
     {
         public Guid CategoryId { get; init; }
         public string? Name { get; init; }

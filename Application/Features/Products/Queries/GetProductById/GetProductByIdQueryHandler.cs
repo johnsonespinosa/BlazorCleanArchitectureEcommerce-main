@@ -1,12 +1,10 @@
 ﻿using Application.Interfaces;
 using Application.Models;
-using AutoMapper;
 using Domain.Entities;
-using MediatR;
 
 namespace Application.Features.Products.Queries.GetProductById
 {
-    public sealed class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductResponse>
+    public sealed class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, Response<ProductResponse>>
     {
         private readonly IRepositoryAsync<Product> _repository;
         private readonly IMapper _mapper;
@@ -16,11 +14,11 @@ namespace Application.Features.Products.Queries.GetProductById
             _mapper = mapper;
         }
 
-        public async Task<ProductResponse> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Response<ProductResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
             var entity = await _repository.GetByIdAsync(request.Id, cancellationToken);
-            var response = _mapper.Map<ProductResponse>(entity);
-            return response;
+            var data = _mapper.Map<ProductResponse>(entity);
+            return new Response<ProductResponse>(data);
         }
     }
 }

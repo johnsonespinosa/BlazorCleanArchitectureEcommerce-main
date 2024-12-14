@@ -1,39 +1,35 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Domain.Commons;
+using Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Repositories
 {
     public class RepositoryAsync<TEntity> : IRepositoryAsync<TEntity> where TEntity : BaseAuditableEntity
     {
-        private readonly IApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
 
-        public RepositoryAsync(IApplicationDbContext context, DbSet<TEntity> dbSet)
+        public RepositoryAsync(ApplicationDbContext context)
         {
             _context = context;
-            _dbSet = dbSet;
+            _dbSet = context.Set<TEntity>();
         }
 
-        public async Task<WritingResponse> AddAsync(TEntity entity, CancellationToken cancellationToken)
+        public async Task<Guid> AddAsync(TEntity entity, CancellationToken cancellationToken)
         {
             await _dbSet.AddAsync(entity, cancellationToken);
-            var result = await SaveChangesAsync(cancellationToken);
-            return result ? WritingResponse.Success() : WritingResponse.Failure(new[] { "Error al agregar la entidad." });
+            await _context.SaveChangesAsync(cancellationToken);
+            return entity.Id;
         }
 
-        public async Task<WritingResponse> DeleteAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Guid> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
             var entity = await GetByIdAsync(id, cancellationToken);
-            if (entity == null)
-            {
-                return WritingResponse.Failure(new[] { "Entidad no encontrada." });
-            }
-
             _dbSet.Remove(entity);
-            var result = await SaveChangesAsync(cancellationToken);
-            return result ? WritingResponse.Success() : WritingResponse.Failure(new[] { "Error al eliminar la entidad." });
+            await _context.SaveChangesAsync(cancellationToken);
+            return entity.Id;
         }
 
         public async Task<PaginatedResponse<TEntity>> GetAsync(PaginationRequest request, CancellationToken cancellationToken)
@@ -58,23 +54,11 @@ namespace Infrastructure.Data.Repositories
             return entity!; 
         }
 
-        public async Task<WritingResponse> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
+        public async Task<Guid> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
         {
             _dbSet.Update(entity);
-            var result = await SaveChangesAsync(cancellationToken);
-            return result ? WritingResponse.Success() : WritingResponse.Failure(new[] { "Error al actualizar la entidad." });
-        }
-
-        private async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                return await _context.SaveChangesAsync(cancellationToken) > 0;
-            }
-            catch (DbUpdateException)
-            {
-                return false;
-            }
+            await _context.SaveChangesAsync(cancellationToken);
+            return entity.Id;
         }
     }
 }

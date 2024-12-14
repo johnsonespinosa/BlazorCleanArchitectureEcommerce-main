@@ -24,11 +24,10 @@ namespace Infrastructure.Identity
         public async Task<string?> GetUserNameAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-
             return user?.UserName;
         }
 
-        public async Task<(WritingResponse Response, string UserId)> CreateUserAsync(string userName, string password)
+        public async Task<(Response<string> Response, string UserId)> CreateUserAsync(string userName, string password)
         {
             var user = new ApplicationUser
             {
@@ -38,13 +37,12 @@ namespace Infrastructure.Identity
 
             var result = await _userManager.CreateAsync(user, password);
 
-            return (result.ToApplicationResult(), user.Id);
+            return (result.ToApplicationResult<string>(), user.Id); // Asegúrate de que ToApplicationResult devuelva Response<string>
         }
 
         public async Task<bool> IsInRoleAsync(string userId, string role)
         {
             var user = await _userManager.FindByIdAsync(userId);
-
             return user != null && await _userManager.IsInRoleAsync(user, role);
         }
 
@@ -58,24 +56,21 @@ namespace Infrastructure.Identity
             }
 
             var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-
             var result = await _authorizationService.AuthorizeAsync(principal, policyName);
 
             return result.Succeeded;
         }
 
-        public async Task<WritingResponse> DeleteUserAsync(string userId)
+        public async Task<Response<string>> DeleteUserAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-
-            return user != null ? await DeleteUserAsync(user) : WritingResponse.Success();
+            return user != null ? await DeleteUserAsync(user) : new Response<string>();
         }
 
-        public async Task<WritingResponse> DeleteUserAsync(ApplicationUser user)
+        public async Task<Response<string>> DeleteUserAsync(ApplicationUser user)
         {
             var result = await _userManager.DeleteAsync(user);
-
-            return result.ToApplicationResult();
+            return result.ToApplicationResult(); // Asegúrate de que ToApplicationResult devuelva Response
         }
     }
 }

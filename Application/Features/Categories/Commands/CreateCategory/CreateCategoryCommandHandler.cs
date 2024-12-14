@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Application.Features.Categories.Commands.CreateCategory
 {
-    public sealed class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, WritingResponse>
+    public sealed class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Response<Guid>>
     {
         private readonly IRepositoryAsync<Category> _repository;
         private readonly IMapper _mapper;
@@ -14,11 +14,11 @@ namespace Application.Features.Categories.Commands.CreateCategory
             _mapper = mapper;
         }
 
-        public async Task<WritingResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var entity = _mapper.Map<Category>(request);
-            var response = await _repository.AddAsync(entity, cancellationToken);
-            return response;
+            var data = await _repository.AddAsync(entity, cancellationToken);
+            return new Response<Guid>(data);
         }
     }
 }

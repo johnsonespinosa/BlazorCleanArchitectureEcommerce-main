@@ -21,23 +21,68 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<WritingResponse> Create([FromBody] CreateCategoryCommand command)
-            => await _sender.Send(command);
+        public async Task<ActionResult<Response<Guid>>> Create([FromBody] CreateCategoryCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new Response<Guid>(ModelState.Values
+                    .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToArray()));
+            }
+
+            var response = await _sender.Send(command);
+            if (!response.Succeeded)
+            {
+                return BadRequest(response);
+            }
+
+            return CreatedAtAction(nameof(GetById), new { id = response.Data }, response);
+        }
 
         [HttpGet]
-        public async Task<PaginatedResponse<CategoryResponse>> GetWithPagination([FromQuery] PaginationRequest request)
-            => await _sender.Send(new GetCategoriesWithPaginationQuery(request));
+        public async Task<ActionResult<PaginatedResponse<CategoryResponse>>> GetWithPagination([FromQuery] PaginationRequest request)
+        {
+            var response = await _sender.Send(new GetCategoriesWithPaginationQuery(request));
+            return Ok(response);
+        }
 
-        [HttpGet("guid:id")]
-        public async Task<CategoryResponse> GetById(Guid id)
-            => await _sender.Send(new GetCategoryByIdQuery(id));
+        [HttpGet("GetById/{id}")]
+        public async Task<ActionResult<Response<CategoryResponse>>> GetById(Guid id)
+        {
+            var response = await _sender.Send(new GetCategoryByIdQuery(id));
+            if (!response.Succeeded)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
 
         [HttpPut]
-        public async Task<WritingResponse> Update([FromBody] UpdateCategoryCommand command)
-            => await _sender.Send(command);
+        public async Task<ActionResult<Response<Guid>>> Update([FromBody] UpdateCategoryCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new Response<Guid>(ModelState.Values
+                    .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToArray()));
+            }
 
-        [HttpDelete("guid:id")]
-        public async Task<WritingResponse> Delete(Guid id)
-            => await _sender.Send(new DeleteCategoryCommand(id));
+            var response = await _sender.Send(command);
+            if (!response.Succeeded)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<ActionResult<Response<Guid>>> Delete(Guid id)
+        {
+            var response = await _sender.Send(new DeleteCategoryCommand(id));
+            if (!response.Succeeded)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }

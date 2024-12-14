@@ -1,11 +1,10 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Domain.Entities;
-using MediatR;
 
 namespace Application.Features.Products.Commands.DeleteProduct
 {
-    public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, WritingResponse>
+    public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Response<Guid>>
     {
         private readonly IRepositoryAsync<Product> _repository;
 
@@ -14,10 +13,10 @@ namespace Application.Features.Products.Commands.DeleteProduct
             _repository = repository;
         }
 
-        public async Task<WritingResponse> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Guid>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var response = await _repository.DeleteAsync(request.Id, cancellationToken);
-            return response;
+            var data = await _repository.DeleteAsync(request.Id, cancellationToken);
+            return new Response<Guid>(data);
         }
     }
 }

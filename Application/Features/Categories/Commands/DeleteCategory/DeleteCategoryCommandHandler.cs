@@ -1,11 +1,10 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Domain.Entities;
-using MediatR;
 
 namespace Application.Features.Categories.Commands.DeleteCategory
 {
-    public sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, WritingResponse>
+    public sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, Response<Guid>>
     {
         private readonly IRepositoryAsync<Category> _repository;
 
@@ -14,10 +13,10 @@ namespace Application.Features.Categories.Commands.DeleteCategory
             _repository = repository;
         }
 
-        public async Task<WritingResponse> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Guid>> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            var response = await _repository.DeleteAsync(request.Id, cancellationToken);
-            return response;
+            var data = await _repository.DeleteAsync(request.Id, cancellationToken);
+            return new Response<Guid>(data);
         }
     }
 }

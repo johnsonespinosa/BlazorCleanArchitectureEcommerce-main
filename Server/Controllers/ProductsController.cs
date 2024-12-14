@@ -21,23 +21,68 @@ namespace Server.Controllers
         }
 
         [HttpPost]
-        public async Task<WritingResponse> Create([FromBody] CreateProductCommand command)
-            => await _sender.Send(command);
+        public async Task<ActionResult<Response<Guid>>> Create([FromBody] CreateProductCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new Response<Guid>(ModelState.Values
+                    .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToArray()));
+            }
+
+            var response = await _sender.Send(command);
+            if (!response.Succeeded)
+            {
+                return BadRequest(response);
+            }
+
+            return CreatedAtAction(nameof(GetById), new { id = response.Data }, response);
+        }
 
         [HttpGet]
-        public async Task<PaginatedResponse<ProductResponse>> GetWithPagination([FromQuery] PaginationRequest request)
-            => await _sender.Send(new GetProductsWithPaginationQuery(request));
+        public async Task<ActionResult<PaginatedResponse<ProductResponse>>> GetWithPagination([FromQuery] PaginationRequest request)
+        {
+            var response = await _sender.Send(new GetProductsWithPaginationQuery(request));
+            return Ok(response);
+        }
 
-        [HttpGet("guid:id")]
-        public async Task<ProductResponse> GetById(Guid id)
-            => await _sender.Send(new GetProductByIdQuery(id));
+        [HttpGet("GetById/{id}")]
+        public async Task<ActionResult<Response<ProductResponse>>> GetById(Guid id)
+        {
+            var response = await _sender.Send(new GetProductByIdQuery(id));
+            if (!response.Succeeded)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
 
         [HttpPut]
-        public async Task<WritingResponse> Update([FromBody] UpdateProductCommand command)
-            => await _sender.Send(command);
+        public async Task<ActionResult<Response<Guid>>> Update([FromBody] UpdateProductCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new Response<Guid>(ModelState.Values
+                    .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToArray()));
+            }
 
-        [HttpDelete("guid:id")]
-        public async Task<WritingResponse> Delete(Guid id)
-            => await _sender.Send(new DeleteProductCommand(id));
+            var response = await _sender.Send(command);
+            if (!response.Succeeded)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<ActionResult<Response<Guid>>> Delete(Guid id)
+        {
+            var response = await _sender.Send(new DeleteProductCommand(id));
+            if (!response.Succeeded)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }
