@@ -7,6 +7,7 @@ using Infrastructure.Identity.Helpers;
 using Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,20 +21,20 @@ namespace Infrastructure.Identity.Services
         private readonly UserManager<User> _userManager;
         private readonly IUserClaimsPrincipalFactory<User> _userClaimsPrincipalFactory;
         private readonly IAuthorizationService _authorizationService;
-        private readonly JwtSetting _jwtSetting;
+        private readonly JwtSetting _jwtSettings;
         private readonly SignInManager<User> _signInManager;
 
         public IdentityService(
             UserManager<User> userManager,
             IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory,
             IAuthorizationService authorizationService,
-            JwtSetting jwtSetting,
+            IOptions<JwtSetting> jwtSettings,
             SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
             _authorizationService = authorizationService;
-            _jwtSetting = jwtSetting;
+            _jwtSettings = jwtSettings.Value;
             _signInManager = signInManager;
         }
 
@@ -135,13 +136,13 @@ namespace Infrastructure.Identity.Services
                 new Claim("uid", user.Id!),
                 new Claim("ip", ipAddress),
             }.Union(userClaims).Union(roleClaims);
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.Key!));
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key!));
             var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
             var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _jwtSetting.Issuer,
-                audience: _jwtSetting.Audience,
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(_jwtSetting.DurationInMinutes),
+                expires: DateTime.Now.AddMinutes(_jwtSettings.DurationInMinutes),
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
