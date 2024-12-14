@@ -1,4 +1,5 @@
-﻿using Application.Commons.Interfaces;
+﻿using Application.Commons.Exceptions;
+using Application.Commons.Interfaces;
 using Application.Commons.Models;
 using Application.Models;
 using AutoMapper;
@@ -78,18 +79,23 @@ namespace Infrastructure.Identity.Services
         public async Task<Response<string>> DeleteUserAsync(User user)
         {
             var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new Exception($"No se pudo eliminar el usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
             return new Response<string>(user.Id);
         }
+
 
         public async Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request, string ipAddress)
         {
             var user = await _userManager.FindByEmailAsync(request.Email!);
             if (user is null)
-                throw new Exception($"No hay una cuenta registrada con el email: {request.Email}.");
+                throw new UserNotFoundException(request.Email!);
 
-            var signInResult = await _signInManager.PasswordSignInAsync(user.UserName!, user.Email!, false, lockoutOnFailure: false);
+            var signInResult = await _signInManager.PasswordSignInAsync(user.UserName!, request.Password!, false, lockoutOnFailure: false);
             if (!signInResult.Succeeded)
-                throw new Exception($"Las credenciales no son válidas.");
+                throw new InvalidOperationException($"Las credenciales no son válidas para el usuario: {user.Email}");
 
             var jwtSecurityToken = await GenerateJwtSecurityToken(user);
             var roles = await _userManager.GetRolesAsync(user);
@@ -146,7 +152,7 @@ namespace Infrastructure.Identity.Services
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(_jwtSettings.DurationInMinutes),
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
@@ -157,11 +163,11 @@ namespace Infrastructure.Identity.Services
             // Verificar si el usuario ya existe
             var existingUserByUserName = await _userManager.FindByNameAsync(request.UserName!);
             if (existingUserByUserName != null)
-                throw new Exception($"Ya existe un usuario con el nombre: {request.UserName}");
+                throw new UserAlreadyExistsException(request.UserName!);
 
             var existingUserByEmail = await _userManager.FindByEmailAsync(request.Email!);
             if (existingUserByEmail != null)
-                throw new Exception($"Ya existe un usuario con el email: {request.Email}");
+                throw new UserAlreadyExistsException(request.Email!);
 
             var user = new User
             {

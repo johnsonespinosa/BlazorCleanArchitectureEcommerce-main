@@ -21,7 +21,7 @@ namespace Application.Commons.Behaviours
             {
                 var requestName = typeof(TRequest).Name;
 
-                _logger.LogError(ex, "Demo Request: Unhandled Exception for Request {Name} {@Request}", requestName, request);
+                _logger.LogError(ex, "Ecommerce: Excepción no controlada para solicitud {Name} {@Request}", requestName, request);
 
                 throw;
             }

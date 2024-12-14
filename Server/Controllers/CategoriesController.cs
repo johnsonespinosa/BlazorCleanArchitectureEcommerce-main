@@ -5,6 +5,7 @@ using Application.Features.Categories.Queries.GetCategoriesWithPagination;
 using Application.Features.Categories.Queries.GetCategoryById;
 using Application.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Controllers
@@ -20,6 +21,7 @@ namespace Server.Controllers
             _sender = sender;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Response<Guid>>> Create([FromBody] CreateCategoryCommand command)
         {
@@ -56,6 +58,7 @@ namespace Server.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<ActionResult<Response<Guid>>> Update([FromBody] UpdateCategoryCommand command)
         {
@@ -74,6 +77,7 @@ namespace Server.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<Response<Guid>>> Delete(Guid id)
         {

@@ -44,7 +44,7 @@ namespace Server.Middlewares
 
         private Task HandleArgumentNullExceptionAsync(HttpContext context, ArgumentNullException exception)
         {
-            var response = new Response<string>(new[] { $"Argument '{exception.ParamName}' cannot be null." });
+            var response = new Response<string>(new[] { $"El argumento '{exception.ParamName}' no puede ser nulo." });
 
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
@@ -54,7 +54,7 @@ namespace Server.Middlewares
 
         private Task HandleUnauthorizedAccessAsync(HttpContext context, UnauthorizedAccessException exception)
         {
-            var writingResponse = new Response<string>(new[] { "You are not authorized to access this resource." });
+            var writingResponse = new Response<string>(new[] { "No está autorizado a acceder a este recurso." });
 
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             context.Response.ContentType = "application/json";
@@ -85,7 +85,7 @@ namespace Server.Middlewares
 
         private Task HandleGenericExceptionAsync(HttpContext context, Exception exception)
         {
-            var writingResponse = new Response<string>(new[] { "An unexpected error occurred." });
+            var writingResponse = new Response<string>(new[] { "Se produjo un error inesperado." });
 
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";

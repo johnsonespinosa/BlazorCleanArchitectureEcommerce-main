@@ -4,6 +4,7 @@ using Application.Features.Users.Commands.CreateUser;
 using Application.Features.Users.Queries.GetUserById;
 using Application.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Controllers
@@ -55,6 +56,7 @@ namespace Server.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpPost("Create")]
         public async Task<ActionResult<Response<string>>> Create([FromBody] UserRequest request)
         {

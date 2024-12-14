@@ -89,6 +89,11 @@ namespace Infrastructure
 
             services.AddAuthorizationBuilder();
 
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+
             services
                 .AddIdentityCore<User>()
                 .AddRoles<IdentityRole>()
