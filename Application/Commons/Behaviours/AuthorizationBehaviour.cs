@@ -1,7 +1,7 @@
 ﻿using Application.Commons.Exceptions;
+using Application.Commons.Interfaces;
 using Application.Commons.Security;
 using Application.Interfaces;
-using MediatR;
 using System.Reflection;
 
 namespace Application.Commons.Behaviours

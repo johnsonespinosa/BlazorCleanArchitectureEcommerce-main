@@ -1,6 +1,7 @@
-﻿using Application.Commons.Models;
-using Application.Interfaces;
+﻿using Application.Commons.Interfaces;
+using Application.Commons.Models;
 using Application.Models;
+using AutoMapper;
 using Domain.Enums;
 using Domain.Settings;
 using Infrastructure.Identity.Helpers;
@@ -23,19 +24,22 @@ namespace Infrastructure.Identity.Services
         private readonly IAuthorizationService _authorizationService;
         private readonly JwtSetting _jwtSettings;
         private readonly SignInManager<User> _signInManager;
+        private readonly IMapper _mapper;
 
         public IdentityService(
             UserManager<User> userManager,
             IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory,
             IAuthorizationService authorizationService,
             IOptions<JwtSetting> jwtSettings,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            IMapper mapper)
         {
             _userManager = userManager;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
             _authorizationService = authorizationService;
             _jwtSettings = jwtSettings.Value;
             _signInManager = signInManager;
+            _mapper = mapper;
         }
 
         public async Task<string?> GetUserNameAsync(string userId)
@@ -181,6 +185,12 @@ namespace Infrastructure.Identity.Services
                 // Manejo de errores: puedes registrar los errores o lanzar excepciones según sea necesario
                 throw new Exception($"No se pudo crear el usuario administrador: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             }
+        }
+
+        public async Task<Response<UserResponse>> GetUserById(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            return new Response<UserResponse>(_mapper.Map<UserResponse>(user));
         }
     }
 }
