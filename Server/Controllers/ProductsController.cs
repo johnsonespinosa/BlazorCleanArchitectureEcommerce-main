@@ -2,7 +2,7 @@
 using Application.Features.Products.Commands.DeleteProduct;
 using Application.Features.Products.Commands.UpdateProduct;
 using Application.Features.Products.Queries.GetProductById;
-using Application.Features.Products.Queries.GetProductsWithPagination;
+using Application.Features.Products.Queries.GetProductsWithPaginationAndFiltering;
 using Application.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +21,7 @@ namespace Server.Controllers
             _sender = sender;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<ActionResult<Response<Guid>>> Create([FromBody] CreateProductCommand command)
         {
@@ -41,16 +41,21 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PaginatedResponse<ProductResponse>>> GetWithPagination([FromQuery] PaginationRequest request)
+        public async Task<ActionResult<PaginatedResponse<ProductResponse>>> GetWithPagination([FromQuery] FilterRequest request)
         {
-            var response = await _sender.Send(new GetProductsWithPaginationQuery(request));
+            var response = await _sender.Send(new GetProductsWithPaginationAndFilteringQuery()
+            {
+                Filter = request.Text,
+                PageSize = request.PageSize,
+                PageNumber = request.PageNumber,
+            });
             return Ok(response);
         }
 
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult<Response<ProductResponse>>> GetById(Guid id)
         {
-            var response = await _sender.Send(new GetProductByIdQuery(id));
+            var response = await _sender.Send(new GetProductByIdQuery() { Id = id });
             if (!response.Succeeded)
             {
                 return NotFound(response);
@@ -58,7 +63,7 @@ namespace Server.Controllers
             return Ok(response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [HttpPut]
         public async Task<ActionResult<Response<Guid>>> Update([FromBody] UpdateProductCommand command)
         {
@@ -77,11 +82,11 @@ namespace Server.Controllers
             return Ok(response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<Response<Guid>>> Delete(Guid id)
         {
-            var response = await _sender.Send(new DeleteProductCommand(id));
+            var response = await _sender.Send(new DeleteProductCommand() { Id = id });
             if (!response.Succeeded)
             {
                 return NotFound(response);

@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+// Agrega servicios para usar el formato Problem Details
+services.AddProblemDetails();
 services.AddApplicationServices();
 services.AddInfrastructureServices(configuration);
 services.AddServerServices();
@@ -25,11 +27,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-app.UseExceptionHandler(options => { });
+// Convierte excepciones no manejadas en respuestas Problem Details
+app.UseExceptionHandler();
+
+// Devuelve la respuesta Problem Details para respuestas no exitosas
+app.UseStatusCodePages();
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

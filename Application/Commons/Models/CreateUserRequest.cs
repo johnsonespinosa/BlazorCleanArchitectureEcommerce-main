@@ -1,6 +1,6 @@
 ﻿namespace Application.Commons.Models
 {
-    public class UserRequest
+    public class CreateUserRequest
     {
         public string? Email { get; set; }
         public string? UserName { get; set; }

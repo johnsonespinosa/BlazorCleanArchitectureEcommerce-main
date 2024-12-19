@@ -1,17 +1,18 @@
 ﻿using Application.Commons.Exceptions;
-using Application.Models;
-using System.Net;
-using System.Text.Json;
+using Ardalis.GuardClauses;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Middlewares
 {
     public class GlobalExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
 
-        public GlobalExceptionHandlerMiddleware(RequestDelegate next)
+        public GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -20,77 +21,46 @@ namespace Server.Middlewares
             {
                 await _next(context);
             }
-            catch (ValidationException ex)
+            catch (Exception exception)
             {
-                await HandleValidationExceptionAsync(context, ex);
-            }
-            catch (NotFoundException ex)
-            {
-                await HandleNotFoundExceptionAsync(context, ex);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                await HandleUnauthorizedAccessAsync(context, ex);
-            }
-            catch (ArgumentNullException ex)
-            {
-                await HandleArgumentNullExceptionAsync(context, ex);
-            }
-            catch (Exception ex)
-            {
-                await HandleGenericExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, exception);
             }
         }
 
-        private Task HandleArgumentNullExceptionAsync(HttpContext context, ArgumentNullException exception)
+        private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var response = new Response<string>(new[] { $"El argumento '{exception.ParamName}' no puede ser nulo." });
+            context.Response.ContentType = "application/problem+json";
 
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            context.Response.ContentType = "application/json";
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "Se produjo un error",
+                Type = exception.GetType().Name,
+                Detail = exception.Message,
+                Instance = context.Request.Path // Proporciona la ruta que causó el error
+            };
 
-            return context.Response.WriteAsync(JsonSerializer.Serialize(response));
-        }
+            switch (exception)
+            {
+                case ValidationException:
+                    problemDetails.Status = StatusCodes.Status400BadRequest;
+                    break;
+                case NotFoundException:
+                    problemDetails.Status = StatusCodes.Status404NotFound;
+                    break;
+                case UnauthorizedAccessException:
+                    problemDetails.Status = StatusCodes.Status401Unauthorized;
+                    break;
+                case ArgumentNullException:
+                    problemDetails.Status = StatusCodes.Status400BadRequest;
+                    break;
+                default:
+                    // Log la excepción para el seguimiento
+                    _logger.LogError(exception, "An unexpected error occurred.");
+                    break;
+            }
 
-        private Task HandleUnauthorizedAccessAsync(HttpContext context, UnauthorizedAccessException exception)
-        {
-            var writingResponse = new Response<string>(new[] { "No está autorizado a acceder a este recurso." });
-
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            context.Response.ContentType = "application/json";
-
-            return context.Response.WriteAsync(JsonSerializer.Serialize(writingResponse));
-        }
-
-        private Task HandleNotFoundExceptionAsync(HttpContext context, NotFoundException exception)
-        {
-            var writingResponse = new Response<string>(new[] { exception.Message });
-
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-            context.Response.ContentType = "application/json";
-
-            return context.Response.WriteAsync(JsonSerializer.Serialize(writingResponse));
-        }
-
-        private Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)
-        {
-            var errors = exception.Errors.SelectMany(e => e.Value).ToArray(); // Aplanar los errores
-            var writingResponse = new Response<string>(errors);
-
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            context.Response.ContentType = "application/json";
-
-            return context.Response.WriteAsync(JsonSerializer.Serialize(writingResponse));
-        }
-
-        private Task HandleGenericExceptionAsync(HttpContext context, Exception exception)
-        {
-            var writingResponse = new Response<string>(new[] { "Se produjo un error inesperado." });
-
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            context.Response.ContentType = "application/json";
-
-            return context.Response.WriteAsync(JsonSerializer.Serialize(writingResponse));
+            return context.Response.WriteAsJsonAsync(problemDetails);
         }
     }
 }

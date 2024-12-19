@@ -158,7 +158,7 @@ namespace Infrastructure.Identity.Services
             return jwtSecurityToken;
         }
 
-        public async Task<Response<string>> CreateUserAsync(UserRequest request, string origin)
+        public async Task<Response<string>> CreateUserAsync(CreateUserRequest request, string origin)
         {
             // Verificar si el usuario ya existe
             var existingUserByUserName = await _userManager.FindByNameAsync(request.UserName!);
@@ -169,26 +169,22 @@ namespace Infrastructure.Identity.Services
             if (existingUserByEmail != null)
                 throw new UserAlreadyExistsException(request.Email!);
 
-            var user = new User
-            {
-                UserName = request.UserName,
-                Email = request.Email,
-                EmailConfirmed = true,
-                PhoneNumber = request.PhoneNumber,
-                PhoneNumberConfirmed = true,
-            };
+            var user = _mapper.Map<User>(request);
+            user.PhoneNumberConfirmed = true;
+            user.EmailConfirmed = true;
 
             // Intentar crear el usuario
             var result = await _userManager.CreateAsync(user, request.Password!);
+
             if (result.Succeeded)
             {
                 // Asignar los roles al usuario
                 await _userManager.AddToRoleAsync(user, Roles.Customer.ToString());
-                return new Response<string>(user.Id); 
+                var response = new Response<string>(user.Id);
+                return response;
             }
             else
             {
-                // Manejo de errores: puedes registrar los errores o lanzar excepciones según sea necesario
                 throw new Exception($"No se pudo crear el usuario administrador: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             }
         }
@@ -196,7 +192,28 @@ namespace Infrastructure.Identity.Services
         public async Task<Response<UserResponse>> GetUserById(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            return new Response<UserResponse>(_mapper.Map<UserResponse>(user));
+            var data = _mapper.Map<UserResponse>(user);
+            var response = new Response<UserResponse>(data);
+            return response;
+        }
+
+        public async Task<Response<string>> UpdateUserAsync(CreateUserRequest user, string id)
+        {
+            var entity = await _userManager.FindByIdAsync(id);
+
+            _mapper.Map(user, entity);
+
+            var result = await _userManager.UpdateAsync(entity!);
+
+            if (!result.Succeeded)
+                throw new Exception($"No se pudo eliminar el usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+
+            return new Response<string>(entity!.Id);
+        }
+
+        public Task<PaginatedResponse<UserResponse>> GetUsersWithPaginationAndFiltering(FilterRequest request)
+        {
+            throw new NotImplementedException();
         }
     }
 }

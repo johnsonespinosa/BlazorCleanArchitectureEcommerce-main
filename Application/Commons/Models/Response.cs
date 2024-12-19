@@ -2,11 +2,8 @@
 {
     public class Response<T>
     {
-        public Response()
-        {
-            Succeeded = true;
-            Errors = null;
-        }
+        public Response() { }
+
         public Response(string[]? errors)
         {
             Errors = errors;
@@ -19,8 +16,8 @@
             Succeeded = true;
         }
 
-        public bool Succeeded { get; init; }
-        public string[]? Errors { get; init; }
+        public bool Succeeded { get; set; }
+        public string[]? Errors { get; set; }
         public T? Data { get; set; }
     }
 }

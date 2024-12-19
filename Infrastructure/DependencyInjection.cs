@@ -1,6 +1,5 @@
 ﻿using Application.Commons.Interfaces;
 using Application.Interfaces;
-using Application.Models;
 using Ardalis.GuardClauses;
 using Domain.Settings;
 using Infrastructure.Data.Contexts;
@@ -11,12 +10,13 @@ using Infrastructure.Identity.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
+using System.Net;
 using System.Text;
 
 namespace Infrastructure
@@ -32,9 +32,9 @@ namespace Infrastructure
             services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
             services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
 
-            services.AddDbContext<ApplicationDbContext>((sp, options) =>
+            services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
             {
-                options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+                options.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
                 options.UseNpgsql(connectionString);
             });
 
@@ -63,26 +63,46 @@ namespace Infrastructure
                 {
                     OnAuthenticationFailed = context =>
                     {
-                        context.NoResult();
-                        context.Response.StatusCode = 500;
-                        context.Response.ContentType = "text/plain";
-                        var result = JsonConvert.SerializeObject(new Response<string>(new[] { context.Exception.ToString() }));
-                        return context.Response.WriteAsync(result);
+                        var problemDetails = new ProblemDetails
+                        {
+                            Status = StatusCodes.Status401Unauthorized,
+                            Title = "Error de autenticación",
+                            Detail = "Token no válido o error de autenticación.",
+                            Instance = context.Request.Path
+                        };
+
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        context.Response.ContentType = "application/problem+json";
+                        return context.Response.WriteAsJsonAsync(problemDetails);
                     },
                     OnChallenge = context =>
                     {
+                        var problemDetails = new ProblemDetails
+                        {
+                            Status = StatusCodes.Status401Unauthorized,
+                            Title = "Autorización fallida",
+                            Detail = "No está autorizado a acceder a este recurso.",
+                            Instance = context.Request.Path
+                        };
+
                         context.HandleResponse();
-                        context.Response.StatusCode = 401;
-                        context.Response.ContentType = "application/json";
-                        var result = JsonConvert.SerializeObject(new Response<string>(new[] { "Usted no está autorizado" }));
-                        return context.Response.WriteAsync(result);
+                        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        context.Response.ContentType = "application/problem+json";
+                        return context.Response.WriteAsJsonAsync(problemDetails);
                     },
                     OnForbidden = context =>
                     {
-                        context.Response.StatusCode = 404;
-                        context.Response.ContentType = "application/json";
-                        var result = JsonConvert.SerializeObject(new Response<string>(new[] { "Usted no tiene permiso sobre este recurso" }));
-                        return context.Response.WriteAsync(result);
+                        var problemDetails = new ProblemDetails
+                        {
+                            Status = StatusCodes.Status403Forbidden,
+                            Title = "Acceso denegado",
+                            Detail = "No tienes permiso para acceder a este recurso.",
+                            Instance = context.Request.Path
+                        };
+
+                        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        context.Response.ContentType = "application/problem+json";
+                        return context.Response.WriteAsJsonAsync(problemDetails);
                     }
                 };
             }).AddBearerToken(IdentityConstants.BearerScheme);

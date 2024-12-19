@@ -1,14 +1,7 @@
-﻿using Application.Models;
-using Domain.Commons;
+﻿using Ardalis.Specification;
 
 namespace Application.Interfaces
 {
-    public interface IRepositoryAsync<TEntity> where TEntity : BaseAuditableEntity
-    {
-        Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task<PaginatedResponse<TEntity>> GetAsync(PaginationRequest request, CancellationToken cancellationToken);
-        Task<Guid> AddAsync(TEntity entity, CancellationToken cancellationToken);
-        Task<Guid> UpdateAsync(TEntity entity, CancellationToken cancelToken);
-        Task<Guid> DeleteAsync(Guid id, CancellationToken cancellationToken);
-    }
+    public interface IRepositoryAsync<TEntity> : IRepositoryBase<TEntity> where TEntity : class { }
+    public interface IReadRepositoryAsync<TEntity> : IReadRepositoryBase<TEntity> where TEntity : class { }
 }

@@ -4,14 +4,12 @@ namespace Application.Commons.Exceptions
 {
     public class ValidationException : Exception
     {
-        public ValidationException()
-            : base("One or more validation failures have occurred.")
+        public ValidationException() : base("Se han producido uno o más errores de validación.")
         {
             Errors = new Dictionary<string, string[]>();
         }
 
-        public ValidationException(IEnumerable<ValidationFailure> failures)
-            : this()
+        public ValidationException(IEnumerable<ValidationFailure> failures) : this()
         {
             Errors = failures
                 .GroupBy(e => e.PropertyName, e => e.ErrorMessage)

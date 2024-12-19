@@ -48,7 +48,7 @@ namespace Server.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult<Response<UserResponse>>> GetById(string id)
         {
-            var response = await _sender.Send(new GetUserByIdQuery(id));
+            var response = await _sender.Send(new GetUserByIdQuery() { Id = id });
             if (!response.Succeeded)
             {
                 return NotFound(response);
@@ -56,9 +56,9 @@ namespace Server.Controllers
             return Ok(response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [HttpPost("Create")]
-        public async Task<ActionResult<Response<string>>> Create([FromBody] UserRequest request)
+        public async Task<ActionResult<Response<string>>> Create([FromBody] CreateUserRequest request)
         {
             if (!ModelState.IsValid)
             {
