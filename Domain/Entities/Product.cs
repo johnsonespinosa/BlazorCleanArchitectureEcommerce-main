@@ -2,14 +2,41 @@
 
 namespace Domain.Entities
 {
-    public class Product : BaseAuditableEntity
+    public sealed class Product : BaseAuditableEntity
     {
-        public Guid CategoryId { get; set; }
-        public Category? Category { get; set; }
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? ImageUrl { get; set; }
-        public decimal Price { get; set; }
-        public int Stock { get; set; }
+        /// <summary>
+        /// Unique identifier for the category this product belongs to.
+        /// </summary>
+        public Guid CategoryId { get; init; }
+
+        /// <summary>
+        /// Navigation property for the associated category.
+        /// </summary>
+        public Category? Category { get; init; }
+
+        /// <summary>
+        /// Name of the product.
+        /// </summary>
+        public string? Name { get; init; }
+
+        /// <summary>
+        /// Description of the product.
+        /// </summary>
+        public string? Description { get; init; }
+
+        /// <summary>
+        /// URL of the product image.
+        /// </summary>
+        public string? ImageUrl { get; init; }
+
+        /// <summary>
+        /// Price of the product.
+        /// </summary>
+        public decimal Price { get; init; }
+
+        /// <summary>
+        /// Available stock for the product.
+        /// </summary>
+        public int Stock { get; init; }
     }
 }

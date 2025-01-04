@@ -10,49 +10,49 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("Products");
 
-            builder.HasKey(p => p.Id);
+            builder.HasKey(product => product.Id);
 
-            builder.Property(p => p.CategoryId)
+            builder.Property(product => product.CategoryId)
                 .IsRequired();
 
-            builder.Property(p => p.Name)
+            builder.Property(product => product.Name)
                 .HasMaxLength(100)
                 .IsRequired();
 
-            builder.Property(p => p.Description)
+            builder.Property(product => product.Description)
                 .HasMaxLength(500)
                 .IsRequired(false);
 
-            builder.Property(p => p.ImageUrl)
+            builder.Property(product => product.ImageUrl)
                 .HasMaxLength(200)
                 .IsRequired(false);
 
-            builder.Property(p => p.Price)
+            builder.Property(product => product.Price)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
-            builder.Property(p => p.Stock)
+            builder.Property(product => product.Stock)
                 .IsRequired();
 
-            // Propiedades auditables
-            builder.Property(p => p.Created)
+            // Auditable properties
+            builder.Property(product => product.Created)
                 .IsRequired();
 
-            builder.Property(p => p.CreatedBy)
+            builder.Property(product => product.CreatedBy)
                 .HasMaxLength(50)
                 .IsRequired(false);
 
-            builder.Property(p => p.LastModified)
+            builder.Property(product => product.LastModified)
                 .IsRequired();
 
-            builder.Property(p => p.LastModifiedBy)
+            builder.Property(product => product.LastModifiedBy)
                 .HasMaxLength(50)
                 .IsRequired(false);
 
-            // Relación con Category
-            builder.HasOne(p => p.Category)
-                .WithMany(c => c.Products)
-                .HasForeignKey(p => p.CategoryId);
+            // Relationship with Category
+            builder.HasOne(navigationExpression: product => product.Category)
+                .WithMany(navigationExpression: category => category.Products)
+                .HasForeignKey(product => product.CategoryId);
         }
     }
 }

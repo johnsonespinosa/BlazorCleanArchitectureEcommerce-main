@@ -56,7 +56,7 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<Guid>("ParentId")
+                    b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -64,6 +64,169 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("Categories", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("7aa13d59-f224-4c4c-9862-46758385c518"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(715), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(715), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Fashion"
+                        },
+                        new
+                        {
+                            Id = new Guid("065fa07c-83a5-4025-afe4-d3e9268ea27b"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(718), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(719), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Men's Clothing",
+                            ParentId = new Guid("7aa13d59-f224-4c4c-9862-46758385c518")
+                        },
+                        new
+                        {
+                            Id = new Guid("ce10d7b5-b3d3-469a-a192-2df1d9b6fcac"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(722), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(723), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Women's Clothing",
+                            ParentId = new Guid("7aa13d59-f224-4c4c-9862-46758385c518")
+                        },
+                        new
+                        {
+                            Id = new Guid("da4de991-5b9a-4c40-88e2-dca2774a9284"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(726), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(726), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Accessories",
+                            ParentId = new Guid("7aa13d59-f224-4c4c-9862-46758385c518")
+                        },
+                        new
+                        {
+                            Id = new Guid("db2d4ac3-fe01-4385-b7a4-65d857254667"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(729), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(730), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Footwear",
+                            ParentId = new Guid("7aa13d59-f224-4c4c-9862-46758385c518")
+                        },
+                        new
+                        {
+                            Id = new Guid("08a812c1-0b8f-4d50-b3a2-67a7cac650a7"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(657), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(660), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Electronics"
+                        },
+                        new
+                        {
+                            Id = new Guid("b62746e4-acb3-4c6c-9cd1-b34bd5a5db76"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(664), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(665), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Mobile Phones",
+                            ParentId = new Guid("08a812c1-0b8f-4d50-b3a2-67a7cac650a7")
+                        },
+                        new
+                        {
+                            Id = new Guid("5ec0e9f4-46c3-4b92-938a-9b41b4082963"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(684), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(684), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Laptops",
+                            ParentId = new Guid("08a812c1-0b8f-4d50-b3a2-67a7cac650a7")
+                        },
+                        new
+                        {
+                            Id = new Guid("65ba3c8e-c9b5-4570-82b7-3be8a66b297f"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(688), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(688), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Televisions",
+                            ParentId = new Guid("08a812c1-0b8f-4d50-b3a2-67a7cac650a7")
+                        },
+                        new
+                        {
+                            Id = new Guid("c909eeef-205f-46f8-947b-471e8c67bf59"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(691), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(692), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Home Appliances"
+                        },
+                        new
+                        {
+                            Id = new Guid("0bd6f06d-307c-4ed3-b90c-953cb5e5035a"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(694), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(695), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Refrigerators",
+                            ParentId = new Guid("c909eeef-205f-46f8-947b-471e8c67bf59")
+                        },
+                        new
+                        {
+                            Id = new Guid("eb5c96d7-7f80-40ef-8b2b-9cf4a2756b0b"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(698), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(699), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Washing Machines",
+                            ParentId = new Guid("c909eeef-205f-46f8-947b-471e8c67bf59")
+                        },
+                        new
+                        {
+                            Id = new Guid("2efda217-8e86-4bdf-87df-bcd1eb791428"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(701), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(702), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Furniture & Decor"
+                        },
+                        new
+                        {
+                            Id = new Guid("5dd9b3aa-1977-45fc-898d-e9608854ae17"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(704), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(705), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Sofas & Chairs",
+                            ParentId = new Guid("2efda217-8e86-4bdf-87df-bcd1eb791428")
+                        },
+                        new
+                        {
+                            Id = new Guid("0a1cb4ef-4696-4ae8-9815-67eeb038b5ec"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(708), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(708), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Tables & Desks",
+                            ParentId = new Guid("2efda217-8e86-4bdf-87df-bcd1eb791428")
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -122,6 +285,278 @@ namespace Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("573d348d-a77a-424a-87b9-2e9700b51ebf"),
+                            CategoryId = new Guid("4aa1fab8-f1a1-4eaa-aec9-4ad41ed18f29"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5347), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Un smartphone con pantalla AMOLED y cámara de 108 MP.",
+                            ImageUrl = "https://example.com/images/smartphone_x1.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5348), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Smartphone X1",
+                            Price = 699.99m,
+                            Stock = 50
+                        },
+                        new
+                        {
+                            Id = new Guid("e90067f0-2b0b-4383-ac7d-ab737a7f8960"),
+                            CategoryId = new Guid("4aa1fab8-f1a1-4eaa-aec9-4ad41ed18f29"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5352), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Un smartphone con excelente rendimiento y batería de larga duración.",
+                            ImageUrl = "https://example.com/images/smartphone_y2.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5352), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Smartphone Y2",
+                            Price = 599.99m,
+                            Stock = 30
+                        },
+                        new
+                        {
+                            Id = new Guid("86242dda-cf9f-4bcc-bfe4-490a127b16b5"),
+                            CategoryId = new Guid("13dd98c8-9bfe-4fa0-a09e-8bd1805beb18"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5356), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Laptop ultradelgada con procesador Intel i7 y 16GB de RAM.",
+                            ImageUrl = "https://example.com/images/laptop_z3.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5356), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Laptop Z3",
+                            Price = 1299.99m,
+                            Stock = 20
+                        },
+                        new
+                        {
+                            Id = new Guid("77e8f615-4524-4548-9a0c-6c2720129522"),
+                            CategoryId = new Guid("13dd98c8-9bfe-4fa0-a09e-8bd1805beb18"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5360), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Laptop para gaming con tarjeta gráfica dedicada.",
+                            ImageUrl = "https://example.com/images/laptop_a4.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5360), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Laptop A4",
+                            Price = 1599.99m,
+                            Stock = 15
+                        },
+                        new
+                        {
+                            Id = new Guid("c782ade4-308a-4579-ab6b-f8b3d24d33b3"),
+                            CategoryId = new Guid("9c929f7c-ce76-49ff-a69c-04fd582f4a74"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5367), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Televisor inteligente con resolución 4K y HDR.",
+                            ImageUrl = "https://example.com/images/televisor_55.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5368), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Televisor 55\" 4K",
+                            Price = 799.99m,
+                            Stock = 25
+                        },
+                        new
+                        {
+                            Id = new Guid("fca5e571-468f-4ae0-a9ff-7ae9796e968f"),
+                            CategoryId = new Guid("9c929f7c-ce76-49ff-a69c-04fd582f4a74"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5371), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Televisor OLED con calidad de imagen superior.",
+                            ImageUrl = "https://example.com/images/televisor_65.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5372), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Televisor 65\" OLED",
+                            Price = 1499.99m,
+                            Stock = 10
+                        },
+                        new
+                        {
+                            Id = new Guid("8e2688af-b8f3-4c3a-ba84-ed980cd1a6f5"),
+                            CategoryId = new Guid("471a33a5-a5fa-4303-85ae-c96a5ecb35db"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5375), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Refrigerador con tecnología frost free y eficiencia energética A++.",
+                            ImageUrl = "https://example.com/images/refrigerador.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5376), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Refrigerador Frost Free",
+                            Price = 899.99m,
+                            Stock = 8
+                        },
+                        new
+                        {
+                            Id = new Guid("48e3708c-bbc8-4ce7-bec6-b746cd22f00c"),
+                            CategoryId = new Guid("69db9a87-c71a-4ccc-bf10-0125b420ee58"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5379), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Lavadora eficiente con carga frontal y múltiples programas.",
+                            ImageUrl = "https://example.com/images/lavadora.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5380), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Lavadora Carga Frontal",
+                            Price = 499.99m,
+                            Stock = 12
+                        },
+                        new
+                        {
+                            Id = new Guid("c25a761f-8921-4d1e-97a1-bdc0e651ed9d"),
+                            CategoryId = new Guid("f1a65016-960f-44c7-8898-9c372c80bd29"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5383), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Sofá modular de diseño moderno y cómodo.",
+                            ImageUrl = "https://example.com/images/sofa_modular.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5384), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Sofá Modular",
+                            Price = 799.99m,
+                            Stock = 5
+                        },
+                        new
+                        {
+                            Id = new Guid("41572e21-9c20-41f2-a2ae-8b1e90cc328b"),
+                            CategoryId = new Guid("811e2619-42ce-4ead-b47a-ffe670e62aaa"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5387), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Mesa de comedor de madera para seis personas.",
+                            ImageUrl = "https://example.com/images/mesa_comedor.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5388), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Mesa de Comedor",
+                            Price = 399.99m,
+                            Stock = 7
+                        },
+                        new
+                        {
+                            Id = new Guid("5879dca8-d191-4b68-a01d-11ea9627f536"),
+                            CategoryId = new Guid("fa7b0ece-f0e9-43be-8d7b-35419f2f4e09"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5391), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Camisa casual de algodón para hombre.",
+                            ImageUrl = "https://example.com/images/camisa_casual.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5392), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Camisa Casual",
+                            Price = 29.99m,
+                            Stock = 50
+                        },
+                        new
+                        {
+                            Id = new Guid("2303df8a-fbe2-4954-a33b-579c5289cf8c"),
+                            CategoryId = new Guid("e1112610-acbf-467c-b404-5aa1eaecd611"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5395), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Pantalón jeans ajustado para hombre.",
+                            ImageUrl = "https://example.com/images/pantalon_jeans.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5396), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Pantalón Jeans",
+                            Price = 49.99m,
+                            Stock = 40
+                        },
+                        new
+                        {
+                            Id = new Guid("d1c2de46-4b83-47c2-8960-343444520a28"),
+                            CategoryId = new Guid("44aa4230-ae86-4571-923e-f8ea5c9e7d95"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5402), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Vestido ligero ideal para el verano.",
+                            ImageUrl = "https://example.com/images/vestido_verano.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5402), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Vestido Verano",
+                            Price = 59.99m,
+                            Stock = 30
+                        },
+                        new
+                        {
+                            Id = new Guid("338bea1d-aa75-44d6-8a60-3392cd434672"),
+                            CategoryId = new Guid("44aa4230-ae86-4571-923e-f8ea5c9e7d95"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5406), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Blusa elegante para ocasiones especiales.",
+                            ImageUrl = "https://example.com/images/blusa_elegante.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5407), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Blusa Elegante",
+                            Price = 39.99m,
+                            Stock = 25
+                        },
+                        new
+                        {
+                            Id = new Guid("29b10cce-4706-4bcc-88a6-e11f8dd4173d"),
+                            CategoryId = new Guid("44aa4230-ae86-4571-923e-f8ea5c9e7d95"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5410), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Falda larga de estilo bohemio.",
+                            ImageUrl = "https://example.com/images/falda_larga.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5411), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Falda Larga",
+                            Price = 34.99m,
+                            Stock = 20
+                        },
+                        new
+                        {
+                            Id = new Guid("21b543a1-2bf8-4bd1-a44b-3a971497f478"),
+                            CategoryId = new Guid("44aa4230-ae86-4571-923e-f8ea5c9e7d95"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5414), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Chaqueta de cuero sintético para mujer.",
+                            ImageUrl = "https://example.com/images/chaqueta_cuero.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5415), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Chaqueta de Cuero",
+                            Price = 89.99m,
+                            Stock = 15
+                        },
+                        new
+                        {
+                            Id = new Guid("edfefbb1-6aaa-40c6-b76c-99abaaa4f0e8"),
+                            CategoryId = new Guid("fa7b0ece-f0e9-43be-8d7b-35419f2f4e09"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5418), new TimeSpan(0, 0, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Reloj deportivo resistente al agua.",
+                            ImageUrl = "https://example.com/images/reloj_deportivo.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 14, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5419), new TimeSpan(0, 0, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Reloj Deportivo",
+                            Price = 69.99m,
+                            Stock = 22
+                        },
+                        new
+                        {
+                            Id = new Guid("f8300645-255f-4e82-b6d7-52e177f8aa8e"),
+                            CategoryId = new Guid("fa7b0ece-f0e9-43be-8d7b-35419f2f4e09"),
+                            Created = new DateTimeOffset(new DateTime(2024, 12, 20, 9, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5425), new TimeSpan(0, -5, 0, 0, 0)),
+                            CreatedBy = "Seeder",
+                            Description = "Bolso de mano de diseño moderno.",
+                            ImageUrl = "https://example.com/images/bolso_mano.jpg",
+                            IsDeleted = false,
+                            LastModified = new DateTimeOffset(new DateTime(2024, 12, 20, 9, 55, 56, 416, DateTimeKind.Unspecified).AddTicks(5499), new TimeSpan(0, -5, 0, 0, 0)),
+                            LastModifiedBy = "Seeder",
+                            Name = "Bolso de Mano",
+                            Price = 39.99m,
+                            Stock = 35
+                        });
                 });
 
             modelBuilder.Entity("Infrastructure.Identity.Models.User", b =>
@@ -325,8 +760,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Category", "Parent")
                         .WithMany("SubCategories")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
                 });

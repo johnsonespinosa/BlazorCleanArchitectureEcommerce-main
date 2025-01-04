@@ -1,5 +1,7 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Data.Contexts;
+using Infrastructure.Data.Seeds;
 using Infrastructure.Identity.Models;
 using Infrastructure.Identity.Seeds;
 using Microsoft.AspNetCore.Identity;
@@ -48,10 +50,13 @@ using (var scope = app.Services.CreateScope())
     {
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+        var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
 
         // Llamar a los métodos de inicialización
         await DefaultRole.SeedAsync(roleManager);
         await DefaultAdminUser.SeedAsync(userManager, roleManager);
+        await DefaultCategories.SeedCategories(context);
     }
     catch (Exception ex)
     {

@@ -56,7 +56,7 @@ namespace Server.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "Administrator")]
+        // [Authorize(Roles = "Administrator")]
         [HttpPost("Create")]
         public async Task<ActionResult<Response<string>>> Create([FromBody] CreateUserRequest request)
         {

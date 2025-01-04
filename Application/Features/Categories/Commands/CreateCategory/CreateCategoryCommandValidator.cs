@@ -4,9 +4,9 @@
     {
         public CreateCategoryCommandValidator()
         {
-            RuleFor(command => command.Name)
-                .NotEmpty().WithMessage("El nombre de la categoría es obligatorio.")
-                .Length(1, 100).WithMessage("El nombre de la categoría debe tener entre 1 y 100 caracteres.");
+            RuleFor(expression: command => command.Name)
+                .NotEmpty().WithMessage("Category name is required.")
+                .Length(1, 100).WithMessage("The category name must be between 1 and 100 characters.");
         }
     }
 }

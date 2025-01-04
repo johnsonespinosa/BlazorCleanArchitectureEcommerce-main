@@ -4,22 +4,26 @@ using Domain.Entities;
 
 namespace Application.Features.Products.Commands.DeleteProduct
 {
-    public record DeleteProductCommand : IRequest<Response<Guid>>
-    {
-        public Guid Id { get; init; }
-    }
+    public record DeleteProductCommand(Guid Id) : IRequest<Response<Guid>>;
+
     internal sealed class DeleteProductCommandHandler(IRepositoryAsync<Product> repository)
         : IRequestHandler<DeleteProductCommand, Response<Guid>>
     {
+        private readonly IRepositoryAsync<Product> _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+
         public async Task<Response<Guid>> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
         {
-            var entity = await repository.GetByIdAsync(command.Id, cancellationToken);
+            // Get the product by ID
+            var product = await _repository.GetByIdAsync(command.Id, cancellationToken);
 
-            if (entity is null)
-                throw new NotFoundException(command.Id.ToString(), nameof(Category));
+            // Check if the product exists
+            if (product is null)
+                throw new NotFoundException(key: command.Id.ToString(), nameof(Product)); 
 
-            await repository.DeleteAsync(entity, cancellationToken);
+            // Delete the product through the repository
+            await _repository.DeleteAsync(product, cancellationToken);
 
+            // Create response with product ID removed
             var response = new Response<Guid>(command.Id);
             return response;
         }

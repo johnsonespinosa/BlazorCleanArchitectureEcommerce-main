@@ -3,11 +3,17 @@ using Domain.Entities;
 
 namespace Application.Features.Categories.Queries.GetCategories
 {
-    public class GetCategoriesSpecificationQuery : Specification<Category>
+    /// <summary>
+    /// Specification for getting categories that have not been deleted.
+    /// </summary>
+    public sealed class GetCategoriesSpecificationQuery : Specification<Category>
     {
         public GetCategoriesSpecificationQuery()
         {
-            Query.Where(category => category.IsDeleted == false).Include(category => category.Products);
+            // Filter categories that are not marked as deleted
+            Query.Where(category => !category.IsDeleted)
+                .Include(category => category.SubCategories) // Include related subcategories
+                .Include(category => category.Products); // Include related products
         }
     }
 }

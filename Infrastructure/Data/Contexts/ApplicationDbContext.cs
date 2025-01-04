@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Infrastructure.Data.Contexts
 {
-    public class ApplicationDbContext : IdentityDbContext<User>, IApplicationDbContext
+    public sealed class ApplicationDbContext : IdentityDbContext<User>, IApplicationDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

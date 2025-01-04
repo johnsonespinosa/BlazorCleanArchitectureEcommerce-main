@@ -1,13 +1,13 @@
-﻿namespace Application.Models
+﻿namespace Application.Commons.Models
 {
     public class ProductResponse
     {
-        public Guid Id { get; set; }
-        public CategoryResponse? Category { get; set; }
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? ImageUrl { get; set; }
-        public decimal Price { get; set; }
-        public int Stock { get; set; }
+        public Guid Id { get; init; }
+        public CategoryResponse? Category { get; init; }
+        public string? Name { get; init; }
+        public string? Description { get; init; }
+        public string? ImageUrl { get; init; }
+        public decimal Price { get; init; }
+        public int Stock { get; init; }
     }
 }

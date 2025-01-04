@@ -1,6 +1,8 @@
-﻿using Application.Features.Categories.Commands.CreateCategory;
+﻿using Application.Commons.Models;
+using Application.Features.Categories.Commands.CreateCategory;
 using Application.Features.Categories.Commands.DeleteCategory;
 using Application.Features.Categories.Commands.UpdateCategory;
+using Application.Features.Categories.Queries.GetCategories;
 using Application.Features.Categories.Queries.GetCategoriesWithPaginationAndFiltering;
 using Application.Features.Categories.Queries.GetCategoryById;
 using Application.Models;
@@ -10,52 +12,56 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(template: "api/[controller]")]
     [ApiController]
-    public class CategoriesController : ControllerBase
+    public class CategoriesController(ISender sender) : ControllerBase
     {
-        private readonly ISender _sender;
+        private readonly ISender _sender = sender ?? throw new ArgumentNullException(nameof(sender));
 
-        public CategoriesController(ISender sender)
-        {
-            _sender = sender;
-        }
-
-        [Authorize(Roles = "Administrator")]
-        [HttpPost("Create")]
+        // [Authorize(Roles = "Administrator")]
+        [HttpPost(template: "Create")]
         public async Task<ActionResult<Response<Guid>>> Create([FromBody] CreateCategoryCommand command)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new Response<Guid>(ModelState.Values
-                    .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToArray()));
+                return BadRequest(error: new Response<Guid>(errors: ModelState.Values
+                    .SelectMany(entry => entry.Errors.Select(error => error.ErrorMessage)).ToArray()));
             }
-
+            
             var response = await _sender.Send(command);
+            
             if (!response.Succeeded)
-            {
-                return BadRequest(response);
-            }
-
-            return CreatedAtAction(nameof(GetById), new { id = response.Data }, response);
+                return BadRequest(response.Errors);
+            
+            return CreatedAtAction(nameof(GetById), routeValues: new { id = response.Data }, value: response);
         }
-
-        [HttpGet]
-        public async Task<ActionResult<PaginatedResponse<CategoryResponse>>> GetWithPagination([FromQuery] FilterRequest request)
+        
+        [HttpGet(template: "GetAll")]
+        public async Task<ActionResult<PaginatedResponse<CategoryResponse>>> GetAll()
         {
-            var response = await _sender.Send(new GetCategoriesWithPaginationAndFilteringQuery()
-            {
-                Filter = request.Text,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize
-            });
+            var request = new GetCategoriesQuery();
+            var response = await _sender.Send(request);
             return Ok(response);
         }
 
-        [HttpGet("GetById/{id}")]
+        [HttpGet(template: "GetWithPagination")]
+        public async Task<ActionResult<PaginatedResponse<CategoryResponse>>> GetWithPagination([FromQuery] FilterRequest filterRequest)
+        {
+            var request = new GetCategoriesWithPaginationAndFilteringQuery()
+            {
+                TextFilter = filterRequest.Text,
+                PageNumber = filterRequest.PageNumber,
+                PageSize = filterRequest.PageSize
+            };
+            var response = await _sender.Send(request);
+            return Ok(response);
+        }
+
+        [HttpGet(template: "GetById/{id}")]
         public async Task<ActionResult<Response<CategoryResponse>>> GetById(Guid id)
         {
-            var response = await _sender.Send(new GetCategoryByIdQuery(){ Id = id });
+            var request = new GetCategoryByIdQuery(id);
+            var response = await _sender.Send(request);
 
             if (!response.Succeeded)
             {
@@ -64,34 +70,35 @@ namespace Server.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "Administrator")]
-        [HttpPut]
+        // [Authorize(Roles = "Administrator")]
+        [HttpPut(template: "Update")]
         public async Task<ActionResult<Response<Guid>>> Update([FromBody] UpdateCategoryCommand command)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new Response<Guid>(ModelState.Values
-                    .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToArray()));
+                return BadRequest(error: new Response<Guid>(errors: ModelState.Values
+                    .SelectMany(entry => entry.Errors.Select(error => error.ErrorMessage)).ToArray()));
             }
 
             var response = await _sender.Send(command);
+            
             if (!response.Succeeded)
-            {
                 return NotFound(response);
-            }
 
             return Ok(response);
         }
 
-        [Authorize(Roles = "Administrator")]
-        [HttpDelete("Delete/{id}")]
+        // [Authorize(Roles = "Administrator")]
+        [HttpDelete(template: "Delete/{id}")]
         public async Task<ActionResult<Response<Guid>>> Delete(Guid id)
         {
-            var response = await _sender.Send(new DeleteCategoryCommand() { Id = id });
+            var request = new DeleteCategoryCommand(id);
+            
+            var response = await _sender.Send(request);
+            
             if (!response.Succeeded)
-            {
                 return NotFound(response);
-            }
+
             return Ok(response);
         }
     }

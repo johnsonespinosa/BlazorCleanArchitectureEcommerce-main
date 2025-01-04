@@ -1,28 +1,34 @@
-﻿using Application.Features.Categories.Commands.CreateCategory;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Models;
 using Domain.Entities;
 
 namespace Application.Features.Categories.Commands.UpdateCategory
 {
-    public record UpdateCategoryCommand : CreateCategoryCommand
+    public record UpdateCategoryCommand(Guid Id, Guid? ParentId, string Name) : IRequest<Response<Guid>>;
+
+    internal sealed class UpdateCategoryCommandHandler(IRepositoryAsync<Category> repository, IMapper mapper)
+        : IRequestHandler<UpdateCategoryCommand, Response<Guid>>
     {
-        public Guid Id { get; init; }
-    }
-    internal sealed class UpdateCategoryCommandHandler(IRepositoryAsync<Category> repository, IMapper mapper) : IRequestHandler<UpdateCategoryCommand, Response<Guid>>
-    {
-        public async Task<Response<Guid>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
+        private readonly IRepositoryAsync<Category> _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+
+        public async Task<Response<Guid>> Handle(UpdateCategoryCommand command, CancellationToken cancellationToken)
         {
-            var entity = await repository.GetByIdAsync(request.Id, cancellationToken);
+            // Get the existing category
+            var category = await _repository.GetByIdAsync(command.Id, cancellationToken);
 
-            if (entity is null)
-                throw new NotFoundException(request.Id.ToString(), nameof(Category));
+            // Check if the category exists
+            if (category is null)
+                throw new NotFoundException(key: command.Id.ToString(), nameof(Category));
 
-            mapper.Map(request, entity);
+            // Map the changes from the command to the existing entity
+            _mapper.Map(command, category);
 
-            await repository.UpdateAsync(entity, cancellationToken);
+            // Update the category via the repository
+            await _repository.UpdateAsync(category, cancellationToken);
 
-            var response = new Response<Guid>(request.Id);
+            // Create response with the updated category ID
+            var response = new Response<Guid>(command.Id);
             return response;
         }
     }

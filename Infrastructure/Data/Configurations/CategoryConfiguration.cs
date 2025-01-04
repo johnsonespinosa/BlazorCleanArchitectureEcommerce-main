@@ -8,42 +8,214 @@ namespace Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-            // Configuración de la tabla
+            // Table setup
             builder.ToTable("Categories");
 
-            // Configuración de la clave primaria
-            builder.HasKey(c => c.Id);
+            // Setting the primary key
+            builder.HasKey(category => category.Id);
 
-            // Configuración de las propiedades
-            builder.Property(c => c.Name)
+            // Setting the properties
+            builder.Property(category => category.Name)
                 .HasMaxLength(100)
                 .IsRequired();
 
-            // Configuración de la relación jerárquica
-            builder.HasOne(c => c.Parent) // Relación con la categoría padre
-                .WithMany(c => c.SubCategories) // Relación con las subcategorías
-                .HasForeignKey(c => c.ParentId) // Clave foránea que apunta a ParentId
-                .OnDelete(DeleteBehavior.Restrict); // Comportamiento en caso de eliminación
+            // Setting up the hierarchical relationship
+            builder.HasOne(navigationExpression: category => category.Parent) // Relationship with the parent category
+                .WithMany(navigationExpression: category => category.SubCategories) // Relationship with subcategories
+                .HasForeignKey(category => category.ParentId) // Foreign key pointing to ParentId
+                .OnDelete(DeleteBehavior.Restrict); // Behavior in case of deletion
 
-            // Configuración de la relación con productos
-            builder.HasMany(c => c.Products) // Relación con productos
-                .WithOne(p => p.Category) 
-                .OnDelete(DeleteBehavior.Cascade); // Comportamiento en caso de eliminación
+            // Setting up the relationship with products
+            builder.HasMany(navigationExpression: category => category.Products) // Relationship with products
+                .WithOne(navigationExpression: product => product.Category) 
+                .OnDelete(DeleteBehavior.Cascade); // Behavior in case of deletion
 
-            // Propiedades auditables
-            builder.Property(c => c.Created)
+            // Auditable properties
+            builder.Property(category => category.Created)
                 .IsRequired();
 
-            builder.Property(c => c.CreatedBy)
+            builder.Property(category => category.CreatedBy)
                 .HasMaxLength(50)
                 .IsRequired(false);
 
-            builder.Property(c => c.LastModified)
+            builder.Property(category => category.LastModified)
                 .IsRequired();
 
-            builder.Property(c => c.LastModifiedBy)
+            builder.Property(category => category.LastModifiedBy)
                 .HasMaxLength(50)
                 .IsRequired(false);
+
+            var electronics = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Electronics",
+                ParentId = null,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var mobilePhones = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Mobile Phones",
+                ParentId = electronics.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var laptops = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Laptops",
+                ParentId = electronics.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var televisions = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Televisions",
+                ParentId = electronics.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var homeAppliances = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Home Appliances",
+                ParentId = null,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var refrigerators = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Refrigerators",
+                ParentId = homeAppliances.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var washingMachines = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Washing Machines",
+                ParentId = homeAppliances.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var furnitureAndDecor = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Furniture & Decor",
+                ParentId = null,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var sofasAndChairs = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Sofas & Chairs",
+                ParentId = furnitureAndDecor.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var tablesAndDesks = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Tables & Desks",
+                ParentId = furnitureAndDecor.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var fashion = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Fashion",
+                ParentId = null,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var menClothing = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Men's Clothing",
+                ParentId = fashion.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var womenClothing = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Women's Clothing",
+                ParentId = fashion.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var accessories = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Accessories",
+                ParentId = fashion.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            var footwear = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = "Footwear",
+                ParentId = fashion.Id,
+                Created = DateTimeOffset.UtcNow,
+                CreatedBy = "Seeder",
+                LastModified = DateTimeOffset.UtcNow,
+                LastModifiedBy = "Seeder"
+            };
+
+            // Add the new data to the entity configuration
+            builder.HasData(
+               fashion, menClothing, womenClothing, accessories, footwear, electronics, mobilePhones, laptops, televisions,
+               homeAppliances, refrigerators, washingMachines,
+               furnitureAndDecor, sofasAndChairs, tablesAndDesks
+            );
         }
     }
 }

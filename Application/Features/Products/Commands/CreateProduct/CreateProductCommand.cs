@@ -4,23 +4,28 @@ using Domain.Entities;
 
 namespace Application.Features.Products.Commands.CreateProduct
 {
-    public record CreateProductCommand : IRequest<Response<Guid>>
-    {
-        public Guid CategoryId { get; init; }
-        public string? Name { get; init; }
-        public string? Description { get; init; }
-        public string? ImageUrl { get; init; }
-        public decimal Price { get; init; }
-        public int Stock { get; init; }
-    }
+    public record CreateProductCommand(
+        Guid CategoryId,
+        string Name,
+        string Description,
+        string ImageUrl,
+        decimal Price,
+        int Stock) : IRequest<Response<Guid>>;
     internal sealed class CreateProductCommandHandler(IRepositoryAsync<Product> repository, IMapper mapper)
         : IRequestHandler<CreateProductCommand, Response<Guid>>
     {
+        private readonly IRepositoryAsync<Product> _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        private readonly IMapper _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         public async Task<Response<Guid>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
         {
-            var entity = mapper.Map<Product>(command);
-            var data = await repository.AddAsync(entity, cancellationToken);
-            var response = new Response<Guid>(data.Id);
+            // Mapping command to entity
+            var entity = _mapper.Map<Product>(command);
+            
+            // Add the category via the repository
+            var product = await _repository.AddAsync(entity, cancellationToken);
+            
+            // Create response with the ID of the new category
+            var response = new Response<Guid>(product.Id);
             return response;
         }
     }

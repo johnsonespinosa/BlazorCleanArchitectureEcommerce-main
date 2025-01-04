@@ -2,16 +2,34 @@
 
 namespace Domain.Entities
 {
-    public class Category : BaseAuditableEntity
+    public sealed class Category : BaseAuditableEntity
     {
-        public string? Name { get; set; }
+        private readonly ICollection<Category> _subCategories = new List<Category>();
+        private readonly ICollection<Product> _products = new List<Product>();
+        
+        /// <summary>
+        /// Required name for the category
+        /// </summary>
+        public required string Name { get; init; }
 
         /// <summary>
-        /// Propiedad para establecer la relación jerárquica
+        /// Property to establish the hierarchical relationship
         /// </summary>
-        public Guid ParentId { get; set; }
-        public Category? Parent { get; set; } // Navegación hacia la categoría padre
-        public ICollection<Product>? Products { get; set; }
-        public ICollection<Category>? SubCategories { get; set; } // Colección de subcategorías
+        public Guid? ParentId { get; init; }
+        
+        /// <summary>
+        /// Navigation to parent category
+        /// </summary>
+        public Category? Parent { get; init; } 
+        
+        /// <summary>
+        /// Collection of products
+        /// </summary>
+        public IReadOnlyCollection<Product> Products => (IReadOnlyCollection<Product>)_products;
+        
+        /// <summary>
+        /// Collection of subcategories
+        /// </summary>
+        public IReadOnlyCollection<Category> SubCategories => (IReadOnlyCollection<Category>)_subCategories;
     }
 }
