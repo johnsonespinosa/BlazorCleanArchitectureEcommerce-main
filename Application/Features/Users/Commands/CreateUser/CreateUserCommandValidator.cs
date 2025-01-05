@@ -1,27 +1,29 @@
-﻿namespace Application.Features.Users.Commands.CreateUser
+﻿using Application.Commons.Models;
+
+namespace Application.Features.Users.Commands.CreateUser
 {
-    public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+    public class CreateUserCommandValidator : AbstractValidator<CreateUserRequest>
     {
         public CreateUserCommandValidator()
         {
-            RuleFor(command => command.Email)
-                .NotEmpty().WithMessage("El correo electrónico es obligatorio.")
-                .EmailAddress().WithMessage("El formato del correo electrónico no es válido.");
+            RuleFor(expression: request => request.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("The email format is not valid.");
 
-            RuleFor(command => command.UserName)
-                .NotEmpty().WithMessage("El nombre de usuario es obligatorio.")
-                .Length(3, 50).WithMessage("El nombre de usuario debe tener entre 3 y 50 caracteres.");
+            RuleFor(expression: request => request.UserName)
+                .NotEmpty().WithMessage("Username is required.")
+                .Length(3, 50).WithMessage("The username must be between 3 and 50 characters.");
 
-            RuleFor(command => command.PhoneNumber)
-                .NotEmpty().WithMessage("El número de teléfono es obligatorio.")
-                .Matches(@"^\+?[1-9]\d{1,14}$").WithMessage("El número de teléfono no es válido.");
+            RuleFor(expression: request => request.PhoneNumber)
+                .NotEmpty().WithMessage("Phone number is required.")
+                .Matches(expression: @"^\+?[1-9]\d{1,14}$").WithMessage("The phone number is invalid.");
 
-            RuleFor(command => command.Password)
-                .NotEmpty().WithMessage("La contraseña es obligatoria.")
-                .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
+            RuleFor(expression: request => request.Password)
+                .NotEmpty().WithMessage("Password is required.")
+                .MinimumLength(6).WithMessage("The password must be at least 6 characters.");
 
-            RuleFor(command => command.ConfirmPassword)
-                .Equal(command => command.Password).WithMessage("Las contraseñas no coinciden.");
+            RuleFor(expression: request => request.ConfirmPassword)
+                .Equal(expression: request => request.Password).WithMessage("The passwords do not match.");
         }
     }
 }

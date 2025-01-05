@@ -3,29 +3,13 @@ using Application.Commons.Models;
 
 namespace Application.Features.Users.Commands.CreateUser
 {
-    public record CreateUserCommand : IRequest<Response<string>>
-    {
-        public string? Email { get; init; }
-        public string? UserName { get; init; }
-        public string? PhoneNumber { get; init; }
-        public string? Password { get; init; }
-        public string? ConfirmPassword { get; init; }
-        public string? Origin { get; init; }
-    }
+    public record CreateUserCommand(CreateUserRequest Request, string Origin) : IRequest<Response<string>>;
     internal sealed class CreateUserCommandHandler(IIdentityService identityService)
         : IRequestHandler<CreateUserCommand, Response<string>>
     {
         public async Task<Response<string>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
         {
-            var request = new CreateUserRequest()
-            {
-                ConfirmPassword = command.ConfirmPassword,
-                Email = command.Email,
-                PhoneNumber = command.PhoneNumber,
-                Password = command.Password,
-                UserName = command.UserName
-            };
-            var response = await identityService.CreateUserAsync(request, command.Origin!);
+            var response = await identityService.CreateUserAsync(command.Request, command.Origin!);
             return response;
         }
     }

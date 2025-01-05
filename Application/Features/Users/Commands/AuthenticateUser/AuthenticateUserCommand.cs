@@ -3,12 +3,8 @@ using Application.Commons.Models;
 
 namespace Application.Features.Users.Commands.AuthenticateUser
 {
-    public record AuthenticateUserCommand : IRequest<Response<AuthenticationResponse>>
-    {
-        public string? Email { get; init; }
-        public string? Password { get; init; }
-        public string? IpAddress { get; init; }
-    }
+    public record AuthenticateUserCommand(string Email, string Password, string IpAddress)
+        : IRequest<Response<AuthenticationResponse>>;
     internal sealed class AuthenticateUserCommandHandler(IIdentityService identityService)
         : IRequestHandler<AuthenticateUserCommand, Response<AuthenticationResponse>>
     {

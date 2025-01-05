@@ -4,13 +4,13 @@
     {
         public AuthenticateUserCommandValidator()
         {
-            RuleFor(command => command.Email)
-                .NotEmpty().WithMessage("El correo electrónico es obligatorio.")
-                .EmailAddress().WithMessage("El formato del correo electrónico no es válido.");
+            RuleFor(expression: command => command.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("The email format is not valid.");
 
-            RuleFor(command => command.Password)
-                .NotEmpty().WithMessage("La contraseña es obligatoria.")
-                .MinimumLength(6).WithMessage("La contraseña debe tener al menos 6 caracteres.");
+            RuleFor(expression: command => command.Password)
+                .NotEmpty().WithMessage("Password is required.")
+                .MinimumLength(6).WithMessage("The password must be at least 6 characters.");
         }
     }
 }

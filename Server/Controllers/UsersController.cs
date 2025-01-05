@@ -14,12 +14,7 @@ namespace Server.Controllers
         [HttpPost(template: "Authenticate")]
         public async Task<ActionResult<Response<AuthenticationResponse>>> Authenticate([FromBody] AuthenticationRequest request)
         {
-            var command = new AuthenticateUserCommand()
-            {
-                Password = request.Password,
-                Email = request.Email,
-                IpAddress = GenerateIpAddress()
-            };
+            var command = new AuthenticateUserCommand(Email: request.Email!, Password: request.Password!, IpAddress: GenerateIpAddress());
             var response = await sender.Send(command);
 
             if (!response.Succeeded)
@@ -43,15 +38,7 @@ namespace Server.Controllers
         [HttpPost(template: "Create")]
         public async Task<ActionResult<Response<string>>> Create([FromBody] CreateUserRequest request)
         {
-            var command = new CreateUserCommand()
-            {
-                UserName = request.UserName,
-                PhoneNumber = request.PhoneNumber,
-                Password = request.Password,
-                Email = request.Email,
-                ConfirmPassword = request.ConfirmPassword,
-                Origin = Request.Headers["origin"]!
-            };
+            var command = new CreateUserCommand(request, Request.Headers["origin"]!);
             var response = await sender.Send(command);
 
             if (!response.Succeeded)

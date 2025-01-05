@@ -39,12 +39,7 @@ namespace Server.Controllers
         [HttpGet(template: "GetWithPagination")]
         public async Task<ActionResult<PaginatedResponse<CategoryResponse>>> GetWithPagination([FromQuery] FilterRequest filterRequest)
         {
-            var request = new GetCategoriesWithPaginationAndFilteringQuery()
-            {
-                TextFilter = filterRequest.Text,
-                PageNumber = filterRequest.PageNumber,
-                PageSize = filterRequest.PageSize
-            };
+            var request = new GetCategoriesWithPaginationAndFilteringQuery(filterRequest);
             var response = await _sender.Send(request);
             return Ok(response);
         }

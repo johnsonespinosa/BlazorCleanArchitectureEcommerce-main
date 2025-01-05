@@ -1,6 +1,8 @@
 ﻿using Application.Commons.Behaviours;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using Application.Commons.Interfaces;
+using Application.Commons.Services;
 
 
 namespace Application
@@ -13,14 +15,17 @@ namespace Application
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-            services.AddMediatR(cfg =>
+            services.AddMediatR(configuration =>
             {
-                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
-                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
-                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+                configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                configuration.AddBehavior(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(UnhandledExceptionBehaviour<,>));
+                configuration.AddBehavior(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(AuthorizationBehaviour<,>));
+                configuration.AddBehavior(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(ValidationBehaviour<,>));
+                configuration.AddBehavior(serviceType: typeof(IPipelineBehavior<,>), implementationType: typeof(PerformanceBehaviour<,>));
             });
+
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
 
             return services;
         }
