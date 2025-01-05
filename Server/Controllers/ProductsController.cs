@@ -4,9 +4,7 @@ using Application.Features.Products.Commands.DeleteProduct;
 using Application.Features.Products.Commands.UpdateProduct;
 using Application.Features.Products.Queries.GetProductById;
 using Application.Features.Products.Queries.GetProductsWithPaginationAndFiltering;
-using Application.Models;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Controllers
@@ -21,18 +19,12 @@ namespace Server.Controllers
         [HttpPost(template: "Create")]
         public async Task<ActionResult<Response<Guid>>> Create([FromBody] CreateProductCommand command)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(error: new Response<Guid>(errors: ModelState.Values
-                    .SelectMany(entry => entry.Errors.Select(error => error.ErrorMessage)).ToArray()));
-            }
-
             var response = await _sender.Send(command);
             
             if (!response.Succeeded)
                 return BadRequest(response);
 
-            return CreatedAtAction(nameof(GetById), new { id = response.Data }, response);
+            return CreatedAtAction(nameof(GetById), routeValues: new { id = response.Data }, value: response);
         }
 
         [HttpGet(template: "GetWithPagination")]
@@ -64,12 +56,6 @@ namespace Server.Controllers
         [HttpPut(template: "Update")]
         public async Task<ActionResult<Response<Guid>>> Update([FromBody] UpdateProductCommand command)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(error: new Response<Guid>(errors: ModelState.Values
-                    .SelectMany(entry => entry.Errors.Select(error => error.ErrorMessage)).ToArray()));
-            }
-
             var response = await _sender.Send(command);
             
             if (!response.Succeeded)

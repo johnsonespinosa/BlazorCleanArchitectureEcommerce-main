@@ -1,6 +1,5 @@
 ﻿using Application.Commons.Models;
 using Application.Interfaces;
-using Application.Models;
 using Domain.Entities;
 
 namespace Application.Features.Categories.Queries.GetCategories
@@ -23,12 +22,15 @@ namespace Application.Features.Categories.Queries.GetCategories
             
             // Get the list of categories from the repository
             var categories = await _repository.ListAsync(specification, cancellationToken);
+
+            if (categories.Count == 0)
+                return new Response<IEnumerable<CategoryResponse>>(message: ResponseMessages.EntityNotFound);
             
             // Map entities to DTOs
             var data = _mapper.Map<IEnumerable<CategoryResponse>>(categories);
             
             // Create response with the data obtained
-            var response = new Response<IEnumerable<CategoryResponse>>(data);
+            var response = new Response<IEnumerable<CategoryResponse>>(data: data, message: ResponseMessages.RecordsRetrievedSuccessfully);
             return response;
         }
     }

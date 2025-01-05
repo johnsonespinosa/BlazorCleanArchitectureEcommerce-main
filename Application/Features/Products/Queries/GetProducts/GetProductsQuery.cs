@@ -1,6 +1,5 @@
 ﻿using Application.Commons.Models;
 using Application.Interfaces;
-using Application.Models;
 using Domain.Entities;
 
 namespace Application.Features.Products.Queries.GetProducts
@@ -20,12 +19,15 @@ namespace Application.Features.Products.Queries.GetProducts
             
             // Get the list of products from the repository
             var products = await _repository.ListAsync(specification, cancellationToken);
+
+            if (products.Count == 0)
+                return new Response<IEnumerable<ProductResponse>>(message: ResponseMessages.EntityNotFound);
             
             // Map entities to DTOs
             var data = _mapper.Map<IEnumerable<ProductResponse>>(products);
             
             // Create response with the data obtained
-            var response = new Response<IEnumerable<ProductResponse>>(data);
+            var response = new Response<IEnumerable<ProductResponse>>(data: data, message: ResponseMessages.RecordsRetrievedSuccessfully);
             return response;
         }
     }

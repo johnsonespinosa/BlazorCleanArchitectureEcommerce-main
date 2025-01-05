@@ -1,6 +1,5 @@
 ﻿using Application.Commons.Models;
 using Application.Interfaces;
-using Application.Models;
 using Domain.Entities;
 
 namespace Application.Features.Products.Queries.GetProductsWithPaginationAndFiltering

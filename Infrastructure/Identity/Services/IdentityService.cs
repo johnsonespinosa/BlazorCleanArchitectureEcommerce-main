@@ -1,7 +1,5 @@
-﻿using Application.Commons.Exceptions;
-using Application.Commons.Interfaces;
+﻿using Application.Commons.Interfaces;
 using Application.Commons.Models;
-using Application.Models;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Settings;
@@ -18,108 +16,95 @@ using System.Text;
 
 namespace Infrastructure.Identity.Services
 {
-    public class IdentityService : IIdentityService
+    public class IdentityService(
+        UserManager<User> userManager,
+        IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory,
+        IAuthorizationService authorizationService,
+        IOptions<JwtSetting> jwtSettings,
+        SignInManager<User> signInManager,
+        IMapper mapper)
+        : IIdentityService
     {
-        private readonly UserManager<User> _userManager;
-        private readonly IUserClaimsPrincipalFactory<User> _userClaimsPrincipalFactory;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly JwtSetting _jwtSettings;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IMapper _mapper;
-
-        public IdentityService(
-            UserManager<User> userManager,
-            IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory,
-            IAuthorizationService authorizationService,
-            IOptions<JwtSetting> jwtSettings,
-            SignInManager<User> signInManager,
-            IMapper mapper)
-        {
-            _userManager = userManager;
-            _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
-            _authorizationService = authorizationService;
-            _jwtSettings = jwtSettings.Value;
-            _signInManager = signInManager;
-            _mapper = mapper;
-        }
+        private readonly JwtSetting _jwtSettings = jwtSettings.Value;
 
         public async Task<string?> GetUserNameAsync(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId);
             return user?.UserName;
         }
 
         public async Task<bool> IsInRoleAsync(string userId, string role)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            return user != null && await _userManager.IsInRoleAsync(user, role);
+            var user = await userManager.FindByIdAsync(userId);
+            return user != null && await userManager.IsInRoleAsync(user, role);
         }
 
         public async Task<bool> AuthorizeAsync(string userId, string policyName)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId);
 
-            if (user == null)
-            {
-                return false;
-            }
+            if (user == null) return false;
 
-            var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
-            var result = await _authorizationService.AuthorizeAsync(principal, policyName);
+            var principal = await userClaimsPrincipalFactory.CreateAsync(user);
+            var result = await authorizationService.AuthorizeAsync(principal, policyName);
 
             return result.Succeeded;
         }
 
         public async Task<Response<string>> DeleteUserAsync(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId);
             return user != null ? await DeleteUserAsync(user) : new Response<string>(userId);
         }
 
         public async Task<Response<string>> DeleteUserAsync(User user)
         {
-            var result = await _userManager.DeleteAsync(user);
+            var result = await userManager.DeleteAsync(user);
+
             if (!result.Succeeded)
-            {
-                throw new Exception($"No se pudo eliminar el usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-            }
-            return new Response<string>(user.Id);
+                return new Response<string>(
+                    message:
+                    $"Failed to delete user: {string.Join(", ", result.Errors.Select(error => error.Description))}");
+
+            return new Response<string>(data: user.Id, message: ResponseMessages.EntityDeleted);
         }
 
 
         public async Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request, string ipAddress)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email!);
+            var user = await userManager.FindByEmailAsync(request.Email!);
             if (user is null)
-                throw new UserNotFoundException(request.Email!);
+                return new Response<AuthenticationResponse>(
+                    message: $"There is no account registered with the email: {request.Email!}.");
 
-            var signInResult = await _signInManager.PasswordSignInAsync(user.UserName!, request.Password!, false, lockoutOnFailure: false);
+            var signInResult = await signInManager.PasswordSignInAsync(user.UserName!, request.Password!, isPersistent: false, lockoutOnFailure: false);
             if (!signInResult.Succeeded)
-                throw new InvalidOperationException($"Las credenciales no son válidas para el usuario: {user.Email}");
+                return new Response<AuthenticationResponse>(
+                    message: $"The credentials are not valid for the user: {user.Email}");
 
-            var jwtSecurityToken = await GenerateJwtSecurityToken(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            var refreshJwtSecurityToken = GenerateRefreshJwtSecurityToken(ipAddress);
+            var securityToken = await GenerateJwtSecurityToken(user);
+            var roles = await userManager.GetRolesAsync(user);
+            var refreshSecurityToken = GenerateRefreshJwtSecurityToken(ipAddress);
 
             var authenticationResponse = new AuthenticationResponse()
             {
                 Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
-                JwtToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(securityToken),
                 Roles = roles.ToList(),
                 IsVerified = user.EmailConfirmed,
-                RefreshJwtSecurityToken = refreshJwtSecurityToken.JwtSecurityToken
+                RefreshJwtSecurityToken = refreshSecurityToken.JwtSecurityToken
             };
 
-            return new Response<AuthenticationResponse>(authenticationResponse);
+            return new Response<AuthenticationResponse>(data: authenticationResponse, message: ResponseMessages.AuthenticationSuccessful);
         }
 
         private RefreshSecurityToken GenerateRefreshJwtSecurityToken(string ipAddress)
         {
             return new RefreshSecurityToken
             {
-                JwtSecurityToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                JwtSecurityToken = Convert.ToBase64String(inArray: RandomNumberGenerator.GetBytes(count: 64)),
                 Expire = DateTime.Now.AddDays(7),
                 Created = DateTime.Now,
                 CreatedByIp = ipAddress,
@@ -128,87 +113,89 @@ namespace Infrastructure.Identity.Services
 
         private async Task<JwtSecurityToken> GenerateJwtSecurityToken(User user)
         {
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
+            var userClaims = await userManager.GetClaimsAsync(user);
+            var roles = await userManager.GetRolesAsync(user);
             var roleClaims = new List<Claim>();
 
             foreach(var role in roles)
-            {
-                roleClaims.Add(new Claim("roles", role));
-            }
+                roleClaims.Add(item: new Claim(type: "roles", value: role));
 
             var ipAddress = IpHelper.GetIpAddress();
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-                new Claim("uid", user.Id!),
-                new Claim("ip", ipAddress),
+                new Claim(type: JwtRegisteredClaimNames.Sub, value: user.UserName!),
+                new Claim(type: JwtRegisteredClaimNames.Jti, value: Guid.NewGuid().ToString()),
+                new Claim(type: JwtRegisteredClaimNames.Email, value: user.Email!),
+                new Claim(type: "uid", value: user.Id),
+                new Claim(type: "ip", value: ipAddress),
             }.Union(userClaims).Union(roleClaims);
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key!));
-            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-            var jwtSecurityToken = new JwtSecurityToken(
+            var signingCredentials = new SigningCredentials(symmetricSecurityKey, algorithm: SecurityAlgorithms.HmacSha256);
+            var securityToken = new JwtSecurityToken(
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
                 signingCredentials: signingCredentials);
 
-            return jwtSecurityToken;
+            return securityToken;
         }
 
         public async Task<Response<string>> CreateUserAsync(CreateUserRequest request, string origin)
         {
-            // Verificar si el usuario ya existe
-            var existingUserByUserName = await _userManager.FindByNameAsync(request.UserName!);
+            // Check if the user already exists
+            var existingUserByUserName = await userManager.FindByNameAsync(request.UserName!);
             if (existingUserByUserName != null)
-                throw new UserAlreadyExistsException(request.UserName!);
+                return new Response<string>(message: ResponseMessages.EntityAlreadyExists);
 
-            var existingUserByEmail = await _userManager.FindByEmailAsync(request.Email!);
+            var existingUserByEmail = await userManager.FindByEmailAsync(request.Email!);
             if (existingUserByEmail != null)
-                throw new UserAlreadyExistsException(request.Email!);
+                return new Response<string>(message: ResponseMessages.EntityAlreadyExists);
 
-            var user = _mapper.Map<User>(request);
+            var user = mapper.Map<User>(request);
             user.PhoneNumberConfirmed = true;
             user.EmailConfirmed = true;
 
-            // Intentar crear el usuario
-            var result = await _userManager.CreateAsync(user, request.Password!);
+            // Try to create the user
+            var result = await userManager.CreateAsync(user, request.Password!);
 
             if (result.Succeeded)
             {
-                // Asignar los roles al usuario
-                await _userManager.AddToRoleAsync(user, Roles.Customer.ToString());
+                // Assign roles to the user
+                await userManager.AddToRoleAsync(user, role: Roles.Customer.ToString());
                 var response = new Response<string>(user.Id);
                 return response;
             }
-            else
-            {
-                throw new Exception($"No se pudo crear el usuario administrador: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-            }
+            return new Response<string>(
+                message:
+                $"Failed to create admin user: {string.Join(", ", result.Errors.Select(error => error.Description))}");
         }
 
         public async Task<Response<UserResponse>> GetUserById(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            var data = _mapper.Map<UserResponse>(user);
-            var response = new Response<UserResponse>(data);
+            var user = await userManager.FindByIdAsync(id);
+            if (user is null)
+                return new Response<UserResponse>(message: ResponseMessages.EntityNotFound);
+            
+            var data = mapper.Map<UserResponse>(user);
+            
+            var response = new Response<UserResponse>(data: data, message: ResponseMessages.RecordsRetrievedSuccessfully);
             return response;
         }
 
         public async Task<Response<string>> UpdateUserAsync(CreateUserRequest user, string id)
         {
-            var entity = await _userManager.FindByIdAsync(id);
+            var entity = await userManager.FindByIdAsync(id);
 
-            _mapper.Map(user, entity);
+            mapper.Map(user, entity);
 
-            var result = await _userManager.UpdateAsync(entity!);
+            var result = await userManager.UpdateAsync(entity!);
 
             if (!result.Succeeded)
-                throw new Exception($"No se pudo eliminar el usuario: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                return new Response<string>(
+                    message: $"Failed to delete user: {string.Join(", ", result.Errors.Select(error => error.Description))}");
 
-            return new Response<string>(entity!.Id);
+            return new Response<string>(data: entity!.Id, message: ResponseMessages.EntityUpdated);
         }
 
         public Task<PaginatedResponse<UserResponse>> GetUsersWithPaginationAndFiltering(FilterRequest request)

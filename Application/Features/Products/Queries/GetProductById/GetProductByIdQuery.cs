@@ -1,6 +1,5 @@
 ﻿using Application.Commons.Models;
 using Application.Interfaces;
-using Application.Models;
 using Domain.Entities;
 
 namespace Application.Features.Products.Queries.GetProductById
@@ -20,13 +19,13 @@ namespace Application.Features.Products.Queries.GetProductById
 
             // Check if the product exists
             if (product is null)
-                throw new NotFoundException(key: query.Id.ToString(), nameof(Product)); 
+                return new Response<ProductResponse>(message: ResponseMessages.EntityNotFound);
 
             // Map the entity to ProductResponse
             var data = _mapper.Map<ProductResponse>(product);
             
             // Create response with the data obtained
-            var response = new Response<ProductResponse>(data);
+            var response = new Response<ProductResponse>(data: data, message: ResponseMessages.RecordsRetrievedSuccessfully);
             return response;
         }
     }

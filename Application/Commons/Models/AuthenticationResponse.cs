@@ -4,14 +4,14 @@ namespace Application.Commons.Models
 {
     public class AuthenticationResponse
     {
-        public string? Id { get; set; }
-        public string? UserName { get; set; }
-        public string? Email { get; set; }
-        public List<string>? Roles { get; set; }
-        public string? JwtToken { get; set; }
-        public bool IsVerified { get; set; }
+        public string? Id { get; init; }
+        public string? UserName { get; init; }
+        public string? Email { get; init; }
+        public List<string>? Roles { get; init; }
+        public string? JwtToken { get; init; }
+        public bool IsVerified { get; init; }
 
         [JsonIgnore]
-        public string? RefreshJwtSecurityToken { get; set; }
+        public string? RefreshJwtSecurityToken { get; init; }
     }
 }

@@ -1,5 +1,5 @@
-﻿using Application.Interfaces;
-using Application.Models;
+﻿using Application.Commons.Models;
+using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Features.Categories.Commands.CreateCategory
@@ -21,7 +21,7 @@ namespace Application.Features.Categories.Commands.CreateCategory
             var category = await _repository.AddAsync(entity, cancellationToken);
 
             // Create response with the ID of the new category
-            var response = new Response<Guid>(category.Id);
+            var response = new Response<Guid>(data: category.Id, message: ResponseMessages.EntityCreated);
             return response;
         }
     }

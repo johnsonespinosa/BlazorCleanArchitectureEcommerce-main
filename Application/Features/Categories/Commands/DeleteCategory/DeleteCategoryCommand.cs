@@ -1,5 +1,5 @@
-﻿using Application.Interfaces;
-using Application.Models;
+﻿using Application.Commons.Models;
+using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Features.Categories.Commands.DeleteCategory
@@ -18,13 +18,13 @@ namespace Application.Features.Categories.Commands.DeleteCategory
 
             // Check if the category exists
             if (category is null)
-                throw new NotFoundException( key: command.Id.ToString(), nameof(Category));
+                return new Response<Guid>(message: ResponseMessages.EntityNotFound);
 
             // Delete the category via the repository
             await _repository.DeleteAsync(category, cancellationToken);
 
             // Create response with the ID of the deleted category
-            var response = new Response<Guid>(command.Id);
+            var response = new Response<Guid>(data: command.Id, message: ResponseMessages.EntityDeleted);
             return response;
         }
     }

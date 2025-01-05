@@ -1,6 +1,5 @@
 ﻿using Application.Commons.Models;
 using Application.Interfaces;
-using Application.Models;
 using Domain.Entities;
 
 namespace Application.Features.Categories.Queries.GetCategoryById
@@ -20,13 +19,13 @@ namespace Application.Features.Categories.Queries.GetCategoryById
 
             // Check if the category exists
             if (category is null)
-                throw new NotFoundException( key: query.Id.ToString(), nameof(Category));
+                return new Response<CategoryResponse>(message: ResponseMessages.EntityNotFound);
 
             // Map the entity to CategoryResponse
             var data = _mapper.Map<CategoryResponse>(category);
             
             // Create response with the data obtained
-            var response = new Response<CategoryResponse>(data);
+            var response = new Response<CategoryResponse>(data: data, message: ResponseMessages.RecordsRetrievedSuccessfully);
             return response;
         }
     }

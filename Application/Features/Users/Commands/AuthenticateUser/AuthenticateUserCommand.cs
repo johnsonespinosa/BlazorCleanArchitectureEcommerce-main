@@ -1,6 +1,5 @@
 ﻿using Application.Commons.Interfaces;
 using Application.Commons.Models;
-using Application.Models;
 
 namespace Application.Features.Users.Commands.AuthenticateUser
 {

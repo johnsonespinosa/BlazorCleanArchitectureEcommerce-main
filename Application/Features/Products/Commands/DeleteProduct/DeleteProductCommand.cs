@@ -1,5 +1,5 @@
-﻿using Application.Interfaces;
-using Application.Models;
+﻿using Application.Commons.Models;
+using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Features.Products.Commands.DeleteProduct
@@ -18,13 +18,13 @@ namespace Application.Features.Products.Commands.DeleteProduct
 
             // Check if the product exists
             if (product is null)
-                throw new NotFoundException(key: command.Id.ToString(), nameof(Product)); 
+                return new Response<Guid>(message: ResponseMessages.EntityNotFound);
 
             // Delete the product through the repository
             await _repository.DeleteAsync(product, cancellationToken);
 
             // Create response with product ID removed
-            var response = new Response<Guid>(command.Id);
+            var response = new Response<Guid>(data: command.Id, message: ResponseMessages.EntityUpdated);
             return response;
         }
     }

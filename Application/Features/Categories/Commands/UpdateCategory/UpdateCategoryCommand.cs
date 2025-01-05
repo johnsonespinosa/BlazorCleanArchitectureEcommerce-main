@@ -1,5 +1,5 @@
-﻿using Application.Interfaces;
-using Application.Models;
+﻿using Application.Commons.Models;
+using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Features.Categories.Commands.UpdateCategory
@@ -19,7 +19,7 @@ namespace Application.Features.Categories.Commands.UpdateCategory
 
             // Check if the category exists
             if (category is null)
-                throw new NotFoundException(key: command.Id.ToString(), nameof(Category));
+                return new Response<Guid>(message: ResponseMessages.EntityNotFound);
 
             // Map the changes from the command to the existing entity
             _mapper.Map(command, category);
@@ -28,7 +28,7 @@ namespace Application.Features.Categories.Commands.UpdateCategory
             await _repository.UpdateAsync(category, cancellationToken);
 
             // Create response with the updated category ID
-            var response = new Response<Guid>(command.Id);
+            var response = new Response<Guid>(data: command.Id, message: ResponseMessages.EntityUpdated);
             return response;
         }
     }

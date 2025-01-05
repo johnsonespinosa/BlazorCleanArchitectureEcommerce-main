@@ -1,7 +1,6 @@
 ﻿using Application.Commons.Interfaces;
 using Application.Commons.Models;
 using Application.Features.Users.Commands.CreateUser;
-using Application.Models;
 
 namespace Application.Features.Users.Commands.UpdateUser
 {

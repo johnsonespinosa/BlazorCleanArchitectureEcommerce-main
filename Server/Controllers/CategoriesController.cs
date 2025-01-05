@@ -5,9 +5,7 @@ using Application.Features.Categories.Commands.UpdateCategory;
 using Application.Features.Categories.Queries.GetCategories;
 using Application.Features.Categories.Queries.GetCategoriesWithPaginationAndFiltering;
 using Application.Features.Categories.Queries.GetCategoryById;
-using Application.Models;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Controllers
@@ -22,12 +20,6 @@ namespace Server.Controllers
         [HttpPost(template: "Create")]
         public async Task<ActionResult<Response<Guid>>> Create([FromBody] CreateCategoryCommand command)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(error: new Response<Guid>(errors: ModelState.Values
-                    .SelectMany(entry => entry.Errors.Select(error => error.ErrorMessage)).ToArray()));
-            }
-            
             var response = await _sender.Send(command);
             
             if (!response.Succeeded)
@@ -64,9 +56,8 @@ namespace Server.Controllers
             var response = await _sender.Send(request);
 
             if (!response.Succeeded)
-            {
                 return NotFound(response);
-            }
+
             return Ok(response);
         }
 
@@ -74,12 +65,6 @@ namespace Server.Controllers
         [HttpPut(template: "Update")]
         public async Task<ActionResult<Response<Guid>>> Update([FromBody] UpdateCategoryCommand command)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(error: new Response<Guid>(errors: ModelState.Values
-                    .SelectMany(entry => entry.Errors.Select(error => error.ErrorMessage)).ToArray()));
-            }
-
             var response = await _sender.Send(command);
             
             if (!response.Succeeded)

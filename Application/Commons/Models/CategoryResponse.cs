@@ -1,6 +1,4 @@
-﻿using Application.Models;
-
-namespace Application.Commons.Models
+﻿namespace Application.Commons.Models
 {
     /// <summary>
     /// DTO to represent the response of a category.

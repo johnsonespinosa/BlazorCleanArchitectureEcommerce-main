@@ -2,70 +2,47 @@
 using Application.Features.Users.Commands.AuthenticateUser;
 using Application.Features.Users.Commands.CreateUser;
 using Application.Features.Users.Queries.GetUserById;
-using Application.Models;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(template: "api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController(ISender sender) : ControllerBase
     {
-        private readonly ISender _sender;
-
-        public UsersController(ISender sender)
-        {
-            _sender = sender;
-        }
-
-        [HttpPost("Authenticate")]
+        [HttpPost(template: "Authenticate")]
         public async Task<ActionResult<Response<AuthenticationResponse>>> Authenticate([FromBody] AuthenticationRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new Response<AuthenticationResponse>(ModelState.Values
-                    .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToArray()));
-            }
-
             var command = new AuthenticateUserCommand()
             {
                 Password = request.Password,
                 Email = request.Email,
                 IpAddress = GenerateIpAddress()
             };
-            var response = await _sender.Send(command);
+            var response = await sender.Send(command);
 
             if (!response.Succeeded)
-            {
                 return BadRequest(response);
-            }
 
-            return CreatedAtAction(nameof(GetById), new { id = response.Data!.Id }, response);
+            return CreatedAtAction(nameof(GetById), routeValues: new { id = response.Data!.Id }, value: response);
         }
 
-        [HttpGet("GetById/{id}")]
+        [HttpGet(template: "GetById/{id}")]
         public async Task<ActionResult<Response<UserResponse>>> GetById(string id)
         {
-            var response = await _sender.Send(new GetUserByIdQuery() { Id = id });
+            var request = new GetUserByIdQuery(id);
+            var response = await sender.Send(request);
             if (!response.Succeeded)
-            {
                 return NotFound(response);
-            }
+
             return Ok(response);
         }
 
         // [Authorize(Roles = "Administrator")]
-        [HttpPost("Create")]
+        [HttpPost(template: "Create")]
         public async Task<ActionResult<Response<string>>> Create([FromBody] CreateUserRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new Response<string>(ModelState.Values
-                    .SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToArray()));
-            }
-
             var command = new CreateUserCommand()
             {
                 UserName = request.UserName,
@@ -75,22 +52,20 @@ namespace Server.Controllers
                 ConfirmPassword = request.ConfirmPassword,
                 Origin = Request.Headers["origin"]!
             };
-            var response = await _sender.Send(command);
+            var response = await sender.Send(command);
 
             if (!response.Succeeded)
-            {
                 return BadRequest(response);
-            }
 
-            return CreatedAtAction(nameof(GetById), new { id = response.Data }, response);
+            return CreatedAtAction(nameof(GetById), routeValues: new { id = response.Data },value: response);
         }
 
         private string GenerateIpAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-for"))
                 return Request.Headers["X-Forwarded-for"]!;
-            else
-                return HttpContext.Connection.RemoteIpAddress!.MapToIPv4().ToString();
+            
+            return HttpContext.Connection.RemoteIpAddress!.MapToIPv4().ToString();
         }
     }
 }

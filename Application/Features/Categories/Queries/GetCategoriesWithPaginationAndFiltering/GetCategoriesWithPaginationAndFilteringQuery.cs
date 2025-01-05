@@ -25,7 +25,7 @@ namespace Application.Features.Categories.Queries.GetCategoriesWithPaginationAnd
     
             // Get the list of categories
             var categories = await _repository.ListAsync(specification, cancellationToken);
-    
+            
             // Count the total number of categories (for pagination)
             var totalCount = await _repository.CountAsync(specification, cancellationToken);
     

@@ -1,5 +1,5 @@
 ﻿using Application.Commons.Interfaces;
-using Application.Models;
+using Application.Commons.Models;
 
 namespace Application.Features.Users.Commands.DeleteUser
 {
